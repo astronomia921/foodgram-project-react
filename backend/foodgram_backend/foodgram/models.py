@@ -1,5 +1,11 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.conf import settings
+# from django.contrib.auth.models import User
+from foodgram_backend.settings import (
+    MAX_LENGTH_NAME, MAX_LENGTH_UNIT,
+    MAX_LENGTH_TAG, MAX_LENGTH_HEX,
+    MAX_LENGTH_SLUG, MAX_LENGTH_DIGITS,
+    MAX_DECIMAL_PLACES, LENGTH_HEADER)
 
 
 class Ingredient(models.Model):
@@ -8,12 +14,12 @@ class Ingredient(models.Model):
     """
     name = models.CharField(
         verbose_name='Название ингредиента',
-        max_length=200
+        max_length=MAX_LENGTH_NAME
     )
     measurement_unit = models.CharField(
         verbose_name='Единицы измерения',
         help_text='Единицы измерения: шт, ложки, стакан, кг, щепотка',
-        max_length=50
+        max_length=MAX_LENGTH_UNIT
     )
 
     class Meta:
@@ -25,7 +31,7 @@ class Ingredient(models.Model):
         verbose_name = 'Ингредиент'
 
     def __str__(self):
-        return self.name
+        return self.name[:LENGTH_HEADER]
 
 
 class Tag(models.Model):
@@ -35,18 +41,18 @@ class Tag(models.Model):
     """
     name = models.CharField(
         verbose_name='Название',
-        max_length=50,
+        max_length=MAX_LENGTH_TAG,
         unique=True
     )
     color = models.CharField(
         verbose_name='Цвет в формате HEX-кода',
         help_text='Цветовой HEX-код (например, #49B64E)',
-        max_length=7,
+        max_length=MAX_LENGTH_HEX,
         unique=True
     )
     slug = models.SlugField(
         verbose_name='slug - идентификатор',
-        max_length=50,
+        max_length=MAX_LENGTH_SLUG,
         unique=True
     )
 
@@ -59,7 +65,7 @@ class Tag(models.Model):
         verbose_name = 'Тег'
 
     def __str__(self):
-        return self.name
+        return self.name[:LENGTH_HEADER]
 
 
 class Recipe(models.Model):
@@ -68,14 +74,13 @@ class Recipe(models.Model):
     Все поля обязательны.
     """
     author = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         verbose_name='Автор',
         help_text='Автор рецепта',
         on_delete=models.CASCADE,
-        related_name='food_recipe'
     )
     name = models.CharField(
-        max_length=200,
+        max_length=MAX_LENGTH_NAME,
         verbose_name='Название',
         help_text='Введите название рецепта'
     )
@@ -112,7 +117,7 @@ class Recipe(models.Model):
         verbose_name = 'Рецепт'
 
     def __str__(self):
-        return self.name
+        return self.name[:LENGTH_HEADER]
 
     def get_ingredient(self):
         return ', '.join(
@@ -138,6 +143,6 @@ class RecipeIngredient(models.Model):
         on_delete=models.CASCADE
     )
     quantity = models.DecimalField(
-        max_digits=6,
-        decimal_places=2
+        max_digits=MAX_LENGTH_DIGITS,
+        decimal_places=MAX_DECIMAL_PLACES
     )
