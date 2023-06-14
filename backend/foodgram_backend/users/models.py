@@ -121,10 +121,16 @@ class Follow(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=['user', 'author'], name='unique_users',
+                violation_error_message=(
+                    'Такая комбинация пользователей уже существует.')
+                
             ),
             models.CheckConstraint(
                 check=~models.Q(user=models.F('author')),
-                name='different_users'),
+                name='different_users',
+                violation_error_message=(
+                    'Автор и подписчик должны быть разными людьми.')
+                ),
         ]
 
     def __str__(self):
