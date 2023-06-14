@@ -1,71 +1,12 @@
 from django.db import models
 from django.conf import settings
-# from django.contrib.auth.models import User
+
 from foodgram_backend.settings import (
-    MAX_LENGTH_NAME, MAX_LENGTH_UNIT,
-    MAX_LENGTH_TAG, MAX_LENGTH_HEX,
-    MAX_LENGTH_SLUG, MAX_LENGTH_DIGITS,
+    MAX_LENGTH_NAME, MAX_LENGTH_DIGITS,
     MAX_DECIMAL_PLACES, LENGTH_HEADER)
 
-
-class Ingredient(models.Model):
-    """
-    Ингредиенты.
-    """
-    name = models.CharField(
-        verbose_name='Название ингредиента',
-        max_length=MAX_LENGTH_NAME
-    )
-    measurement_unit = models.CharField(
-        verbose_name='Единицы измерения',
-        help_text='Единицы измерения: шт, ложки, стакан, кг, щепотка',
-        max_length=MAX_LENGTH_UNIT
-    )
-
-    class Meta:
-        ordering = ['name']
-        indexes = [
-            models.Index(fields=['name']),
-        ]
-        verbose_name_plural = 'Ингредиенты'
-        verbose_name = 'Ингредиент'
-
-    def __str__(self):
-        return self.name[:LENGTH_HEADER]
-
-
-class Tag(models.Model):
-    """
-    Тег для рецепта.
-    Все поля обязательны для заполнения и уникальны.
-    """
-    name = models.CharField(
-        verbose_name='Название',
-        max_length=MAX_LENGTH_TAG,
-        unique=True
-    )
-    color = models.CharField(
-        verbose_name='Цвет в формате HEX-кода',
-        help_text='Цветовой HEX-код (например, #49B64E)',
-        max_length=MAX_LENGTH_HEX,
-        unique=True
-    )
-    slug = models.SlugField(
-        verbose_name='slug - идентификатор',
-        max_length=MAX_LENGTH_SLUG,
-        unique=True
-    )
-
-    class Meta:
-        ordering = ['name']
-        indexes = [
-            models.Index(fields=['name']),
-        ]
-        verbose_name_plural = 'Теги'
-        verbose_name = 'Тег'
-
-    def __str__(self):
-        return self.name[:LENGTH_HEADER]
+from ingredients.models import Ingredient
+from tags.models import Tag
 
 
 class Recipe(models.Model):
@@ -86,6 +27,7 @@ class Recipe(models.Model):
     )
     image = models.ImageField(
         verbose_name='Изображение',
+        help_text='Загрузите изображение',
         upload_to='recipes/%Y/%m/%d',
         blank=True
     )
@@ -101,11 +43,13 @@ class Recipe(models.Model):
     )
     tags = models.ManyToManyField(
         Tag,
-        related_name='recipe_tag',
         verbose_name='Тег',
+        related_name='recipe_tag',
+        through='RecipeTags'
     )
     cooking_time = models.PositiveIntegerField(
         verbose_name='Время приготовления в минутах',
+        help_text='Введите время приготовления (ед. измерения в минутах))',
     )
 
     class Meta:
@@ -119,20 +63,10 @@ class Recipe(models.Model):
     def __str__(self):
         return self.name[:LENGTH_HEADER]
 
-    def get_ingredient(self):
-        return ', '.join(
-            [str(field) for field in self.ingredients.all()]
-            )
-
-    def get_tag(self):
-        return ', '.join(
-            [str(field) for field in self.tags.all()]
-            )
-
 
 class RecipeIngredient(models.Model):
     """
-    Промежуточная модель.
+    Промежуточная модель для ингредиентов.
     """
     recipe = models.ForeignKey(
         Recipe,
@@ -144,5 +78,94 @@ class RecipeIngredient(models.Model):
     )
     quantity = models.DecimalField(
         max_digits=MAX_LENGTH_DIGITS,
-        decimal_places=MAX_DECIMAL_PLACES
+        decimal_places=MAX_DECIMAL_PLACES,
     )
+
+    class Meta:
+        verbose_name = 'Ингредиент'
+        verbose_name_plural = 'Ингредиенты'
+
+    def __str__(self):
+        return f"В рецепте '{self.recipe}' есть ингредиент '{self.ingredient}'"
+
+
+class RecipeTags(models.Model):
+    """
+    Промежуточная модель для тегов.
+    """
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        verbose_name='Рецепт'
+    )
+    tag = models.ForeignKey(
+        Tag,
+        on_delete=models.CASCADE,
+        verbose_name='Тег'
+    )
+
+    class Meta:
+        verbose_name = 'Тег'
+        verbose_name_plural = 'Тег'
+
+    def __str__(self):
+        return f"У рецепта '{self.recipe}' есть тег '{self.tag}'"
+
+
+class Favorite(models.Model):
+    """
+    Модель избранных рецептов.
+    """
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='favorites',
+        verbose_name='Пользователь'
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        related_name='in_favorite',
+        verbose_name='Рецепт'
+    )
+
+    class Meta:
+        verbose_name = 'Избранный рецепт'
+        verbose_name_plural = 'Избранные рецепты'
+
+        ordering = ['recipe']
+        indexes = [
+            models.Index(fields=['user', 'recipe']),
+            ]
+
+    def __str__(self):
+        return (f"Рецепт: '{self.recipe}' добавлен в избранное"
+                f"пользователю: '{self.user.username}'")
+
+
+class ShoppingCart(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='shopping_list',
+        verbose_name='Пользователь'
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        related_name='in_shopping_list',
+        verbose_name='Рецепт'
+    )
+
+    class Meta:
+        verbose_name = 'Cписок покупок'
+        verbose_name_plural = 'Список покупок'
+
+        ordering = ['recipe']
+        indexes = [
+            models.Index(fields=['user', 'recipe']),
+            ]
+
+    def __str__(self):
+        return (f"Рецепт: '{self.recipe}' добавлен в список покупок"
+                f"пользователю: '{self.user.username}'")

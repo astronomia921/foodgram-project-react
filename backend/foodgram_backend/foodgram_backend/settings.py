@@ -35,7 +35,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
 
+    'ingredients.apps.IngredientsConfig',
     'users.apps.UsersConfig',
+    'tags.apps.TagsConfig',
     'foodgram.apps.FoodgramConfig',
 ]
 
