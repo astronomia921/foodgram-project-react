@@ -13,17 +13,16 @@ class TagInline(admin.TabularInline):
 
 @admin.register(Recipe)
 class RecipeModelAdmin(admin.ModelAdmin):
-    list_display = ('id', 'author', 'name', 'cooking_time',
+    list_display = ('id', 'author', 'pub_date', 'cooking_time',
                     'get_ingredient', 'get_tag')
     fields = ('author', 'name', 'image',
               'text', 'cooking_time', )
     inlines = [
         RecipeInline, TagInline
     ]
-    list_filter = ('name', 'cooking_time',)
-    search_fields = ('name', 'text',)
-    raw_id_fields = ('author',)
-    ordering = ('name',)
+    list_filter = ('name', 'pub_date', 'cooking_time',)
+    search_fields = ('name', 'pub_date',)
+    ordering = ('-pub_date',)
 
     def get_ingredient(self, obj):
         return ', '.join(

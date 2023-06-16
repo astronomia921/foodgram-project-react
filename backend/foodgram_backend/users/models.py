@@ -1,6 +1,6 @@
 from django.db import models
-from django.contrib.auth import models as auth_models
 from django.conf import settings
+from django.contrib.auth import models as auth_models
 
 from .validators import validate_username
 
@@ -123,7 +123,7 @@ class Follow(models.Model):
                 fields=['user', 'author'], name='unique_users',
                 violation_error_message=(
                     'Такая комбинация пользователей уже существует.')
-                
+
             ),
             models.CheckConstraint(
                 check=~models.Q(user=models.F('author')),

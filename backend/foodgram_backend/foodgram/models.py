@@ -1,5 +1,8 @@
+import base64
+
 from django.db import models
 from django.conf import settings
+from django.core.validators import MinValueValidator
 
 from foodgram_backend.settings import (
     MAX_LENGTH_NAME, MAX_LENGTH_DIGITS,
@@ -35,6 +38,10 @@ class Recipe(models.Model):
         verbose_name='Текстовое описание',
         help_text='Добавьте описание рецепта',
     )
+    pub_date = models.DateTimeField(
+        verbose_name='Дата публикации рецепта',
+        auto_now_add=True,
+    )
     ingredients = models.ManyToManyField(
         Ingredient,
         verbose_name='Ингредиенты',
@@ -49,11 +56,12 @@ class Recipe(models.Model):
     )
     cooking_time = models.PositiveIntegerField(
         verbose_name='Время приготовления в минутах',
+        validators=(MinValueValidator(1),),
         help_text='Введите время приготовления (ед. измерения в минутах))',
     )
 
     class Meta:
-        ordering = ['name']
+        ordering = ['-pub_date']
         indexes = [
             models.Index(fields=['name']),
         ]
