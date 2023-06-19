@@ -1,20 +1,35 @@
 from django.contrib.auth import get_user_model
 from djoser.views import UserViewSet
-
+from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
-from rest_framework.pagination import PageNumberPagination
-from rest_framework import viewsets, mixins
 
-from .serializers import CreateUserSerializer
+from rest_framework.permissions import (IsAuthenticated,)
+from rest_framework import generics, viewsets, views, mixins, status
+
+from .pagination import MyPagination
+from .models import Follow
+from .serializers import FollowSerializer
 
 User = get_user_model()
 
 
-class RegistrationViewSet(mixins.CreateModelMixin,
-                          mixins.ListModelMixin,
-                          viewsets.GenericViewSet):
-    queryset = User.objects.all()
-    serializer_class = CreateUserSerializer
-    permission_classes = [AllowAny]
-    pagination_class = PageNumberPagination
+class AccountViewSet(UserViewSet):
+    permission_classes = (IsAuthenticated, )
+    pagination_class = MyPagination
+
+    @action(
+            methods=['get'],
+            detail=False,
+            permission_classes=[IsAuthenticated],
+            url_path='subscriptions',
+            url_name='subscriptions',
+            )
+    def subscriptions(self, request):
+        user = self.request.user
+        if user.is_anonymous:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        pages = self.paginate_queryset(
+            User.objects.filter(follower__user=self.request.user)
+        )
+        serializer = FollowSerializer(pages, many=True)
+        return self.get_paginated_response(serializer.data)

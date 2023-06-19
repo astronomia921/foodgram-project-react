@@ -89,8 +89,8 @@ class User(auth_models.AbstractUser):
     )
     objects = UserManager()
 
-    USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['first_name', 'last_name', 'email']
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['first_name', 'last_name', 'username']
 
     class Meta:
         verbose_name = 'Пользователь'

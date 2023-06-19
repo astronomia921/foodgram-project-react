@@ -56,7 +56,11 @@ class Recipe(models.Model):
     )
     cooking_time = models.PositiveIntegerField(
         verbose_name='Время приготовления в минутах',
-        validators=(MinValueValidator(1),),
+        validators=(
+            MinValueValidator(
+                1,
+                message='Время приготовление должны быть >= 1 минуте.'),
+        ),
         help_text='Введите время приготовления (ед. измерения в минутах))',
     )
 
@@ -87,6 +91,11 @@ class RecipeIngredient(models.Model):
     quantity = models.DecimalField(
         max_digits=MAX_LENGTH_DIGITS,
         decimal_places=MAX_DECIMAL_PLACES,
+        validators=[
+            MinValueValidator(
+                1, 'Колличество ингредиента в рецептне должно быть >= 1.'
+            )
+        ]
     )
 
     class Meta:
@@ -148,7 +157,7 @@ class Favorite(models.Model):
 
     def __str__(self):
         return (f"Рецепт: '{self.recipe}' добавлен в избранное"
-                f"пользователю: '{self.user.username}'")
+                f"пользователем: '{self.user.username}'")
 
 
 class ShoppingCart(models.Model):

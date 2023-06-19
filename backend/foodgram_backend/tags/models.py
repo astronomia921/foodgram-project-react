@@ -1,7 +1,10 @@
 from django.db import models
+from django.core.validators import RegexValidator
+
 from foodgram_backend.settings import (
     MAX_LENGTH_TAG, MAX_LENGTH_HEX,
-    MAX_LENGTH_SLUG, LENGTH_HEADER)
+    MAX_LENGTH_SLUG, LENGTH_HEADER,
+    REGEX_VALIDATORS)
 
 
 # Create your models here.
@@ -20,7 +23,13 @@ class Tag(models.Model):
         verbose_name='Цвет в формате HEX-кода',
         help_text='Цветовой HEX-код (например, #49B64E)',
         max_length=MAX_LENGTH_HEX,
-        unique=True
+        unique=True,
+        validators=[
+            RegexValidator(
+                regex=REGEX_VALIDATORS,
+                message='Введите значение цвета в формате HEX! Пример:#FF0000'
+            )
+        ]
     )
     slug = models.SlugField(
         verbose_name='Slug - идентификатор',
