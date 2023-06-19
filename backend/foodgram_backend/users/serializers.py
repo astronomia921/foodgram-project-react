@@ -14,7 +14,7 @@ User = get_user_model()
 
 class CustomUserSerializer(UserSerializer):
     is_subscribed = serializers.SerializerMethodField(
-        method_name='get_subscribed'
+        method_name='get_is_subscribed'
     )
     email = serializers.SerializerMethodField(
         method_name='get_email'
@@ -35,7 +35,7 @@ class CustomUserSerializer(UserSerializer):
             'password': {'write_only': True},
         }
 
-    def get_subscribed(self, obj):
+    def get_is_subscribed(self, obj):
         """
         Метод проверки наличия подписки у пользователя.
         Если подписан - True, иначе False.
@@ -93,29 +93,28 @@ class UserCreateSerializer(UserCreateSerializer):
         }
 
 
-class BaseRecipeSerializer(serializers.ModelSerializer):
+class RecipeMinifiedSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = ('id', 'name', 'image', 'cooking_time')
-        read_only_fields = '__all__'
 
 
 class FollowSerializer(serializers.ModelSerializer):
-    id = serializers.ReadOnlyField(source='author.id')
-    email = serializers.ReadOnlyField(source='author.email')
-    username = serializers.ReadOnlyField(source='author.username')
-    first_name = serializers.ReadOnlyField(source='author.first_name')
-    last_name = serializers.ReadOnlyField(source='author.last_name')
     is_subscribed = serializers.SerializerMethodField(
-        method_name='get_subscribed'
+        method_name='get_is_subscribed',
+        read_only=True
     )
-    recipes = BaseRecipeSerializer(many=True, read_only=True)
+    recipes = serializers.SerializerMethodField(
+        method_name='get_recipes',
+        read_only=True
+    )
     recipes_count = serializers.SerializerMethodField(
-        method_name='get_recipes_count'
+        method_name='get_recipes_count',
+        read_only=True
     )
 
     class Meta:
-        model = Follow
+        model = User
         fields = (
             'id', 'email',
             'username', 'first_name',
@@ -123,13 +122,24 @@ class FollowSerializer(serializers.ModelSerializer):
             'recipes', 'recipes_count',
         )
 
-    def get_subscribed(self, obj):
-        """
-        Метод проверки наличия подписки у пользователя.
-        Если подписан - True, иначе False.
-        """
-        user = self.context.get("user")
+    def get_is_subscribed(self, obj):
+        user = self.context.get('user')
+        if not user:
+            return False
         return Follow.objects.filter(user=user, author=obj).exists()
 
     def get_recipes_count(self, obj):
         return Recipe.objects.filter(author=obj).count()
+
+    def get_recipes(self, obj):
+        request = self.context.get('request')
+        context = {'request': request}
+        recipes_limit = request.query_params.get('recipes_limit')
+        condition = int(recipes_limit) if recipes_limit else recipes_limit
+        if Recipe.objects.filter(author=obj).exists():
+            return RecipeMinifiedSerializer(
+                Recipe.objects.filter(author=obj)[:condition],
+                context=context,
+                many=True
+            ).data
+        return []

@@ -3,7 +3,8 @@ from djoser.views import UserViewSet
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from rest_framework.permissions import (IsAuthenticated,)
+from rest_framework.permissions import (IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly)
 from rest_framework import generics, viewsets, views, mixins, status
 
 from .pagination import MyPagination
@@ -14,7 +15,7 @@ User = get_user_model()
 
 
 class AccountViewSet(UserViewSet):
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticatedOrReadOnly, )
     pagination_class = MyPagination
 
     @action(
@@ -29,7 +30,8 @@ class AccountViewSet(UserViewSet):
         if user.is_anonymous:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
         pages = self.paginate_queryset(
-            User.objects.filter(follower__user=self.request.user)
+            User.objects.filter(following__user=user)
         )
-        serializer = FollowSerializer(pages, many=True)
+        serializer = FollowSerializer(
+            pages, many=True, context={'user': user, 'request': request})
         return self.get_paginated_response(serializer.data)
