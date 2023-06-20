@@ -1,13 +1,15 @@
+import re
+
 from django.contrib.auth import get_user_model
 from djoser.serializers import UserCreateSerializer, UserSerializer
 
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
+from foodgram.models import Recipe
 
 from .models import Follow
 
-from foodgram.models import Recipe
 
 User = get_user_model()
 
@@ -92,6 +94,18 @@ class UserCreateSerializer(UserCreateSerializer):
             'password': {'required': True},
         }
 
+        def validate_username(self, value):
+            if not value.isalpha():
+                raise serializers.ValidationError(
+                    "Ник-нейм должно содержать только буквы")
+            return value
+
+        def validate_email(self, value):
+            if not re.match(r'^[\w\.-]+@[\w\.-]+\.\w{2,}$', value):
+                raise serializers.ValidationError(
+                    "Некорректный адрес электронной почты")
+            return value
+
 
 class RecipeMinifiedSerializer(serializers.ModelSerializer):
     class Meta:
@@ -128,18 +142,18 @@ class FollowSerializer(serializers.ModelSerializer):
             return False
         return Follow.objects.filter(user=user, author=obj).exists()
 
-    def get_recipes_count(self, obj):
-        return Recipe.objects.filter(author=obj).count()
-
     def get_recipes(self, obj):
         request = self.context.get('request')
         context = {'request': request}
         recipes_limit = request.query_params.get('recipes_limit')
-        condition = int(recipes_limit) if recipes_limit else recipes_limit
+        limit = int(recipes_limit) if recipes_limit else recipes_limit
         if Recipe.objects.filter(author=obj).exists():
             return RecipeMinifiedSerializer(
-                Recipe.objects.filter(author=obj)[:condition],
+                Recipe.objects.filter(author=obj)[:limit],
                 context=context,
                 many=True
             ).data
         return []
+
+    def get_recipes_count(self, obj):
+        return Recipe.objects.filter(author=obj).count()

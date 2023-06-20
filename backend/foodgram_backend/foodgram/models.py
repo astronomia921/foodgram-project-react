@@ -88,7 +88,7 @@ class RecipeIngredient(models.Model):
         Ingredient,
         on_delete=models.CASCADE
     )
-    quantity = models.DecimalField(
+    amount = models.DecimalField(
         max_digits=MAX_LENGTH_DIGITS,
         decimal_places=MAX_DECIMAL_PLACES,
         validators=[
