@@ -1,7 +1,10 @@
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 
 from djoser.views import UserViewSet
+
+from rest_framework import filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
@@ -17,7 +20,9 @@ User = get_user_model()
 
 class AccountViewSet(UserViewSet):
     permission_classes = (IsAuthenticated, )
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     pagination_class = MyPagination
+    search_fields = ['^username', '^email', '^first_name', '^last_name']
 
     @action(
             methods=['get'],

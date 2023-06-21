@@ -1,6 +1,8 @@
 from django.contrib import admin
 
-from .models import Recipe
+from .models import (Recipe, RecipeTags,
+                     RecipeIngredient, Favorite,
+                     ShoppingCart)
 
 
 class RecipeInline(admin.TabularInline):
@@ -29,11 +31,36 @@ class RecipeModelAdmin(admin.ModelAdmin):
             [str(field) for field in obj.ingredients.all()]
             )
 
-    get_ingredient.short_description = 'Ингредиенты'
-
     def get_tag(sel, obj):
         return ', '.join(
             [str(field) for field in obj.tags.all()]
             )
 
+    get_ingredient.short_description = 'Ингредиенты'
     get_tag.short_description = 'Теги'
+
+
+@admin.register(Favorite)
+class FavoriteAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'recipe')
+    list_filter = ('user', 'recipe')
+
+
+@admin.register(ShoppingCart)
+class ShoppingCartAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'recipe')
+    list_filter = ('user', 'recipe')
+
+
+@admin.register(RecipeTags)
+class RecipeTagsAdmin(admin.ModelAdmin):
+    list_display = ('id', 'recipe', 'tag')
+    list_filter = ('recipe', 'tag')
+    ordering = ('recipe',)
+
+
+@admin.register(RecipeIngredient)
+class RecipeIngredientAdmin(admin.ModelAdmin):
+    list_display = ('id', 'recipe', 'ingredient', 'amount')
+    list_filter = ('recipe', 'ingredient',)
+    ordering = ('recipe',)

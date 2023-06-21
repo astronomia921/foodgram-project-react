@@ -1,6 +1,5 @@
 from rest_framework import serializers
 
-from ingredients.serializers import IngredientSerializer
 from tags.serializers import TagSerializer
 from users.serializers import CustomUserSerializer
 
@@ -70,10 +69,3 @@ class RecipeSerializer(serializers.ModelSerializer):
         if not user:
             return False
         return ShoppingCart.objects.filter(user=user, author=obj).exists()
-
-
-class RecipeFollowSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Recipe
-        fields = ('id', 'name', 'image', 'cooking_time')

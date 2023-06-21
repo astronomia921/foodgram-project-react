@@ -1,5 +1,3 @@
-import base64
-
 from django.db import models
 from django.conf import settings
 from django.core.validators import MinValueValidator
@@ -77,9 +75,6 @@ class Recipe(models.Model):
 
 
 class RecipeIngredient(models.Model):
-    """
-    Промежуточная модель для ингредиентов.
-    """
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE
@@ -107,9 +102,6 @@ class RecipeIngredient(models.Model):
 
 
 class RecipeTags(models.Model):
-    """
-    Промежуточная модель для тегов.
-    """
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
@@ -136,19 +128,18 @@ class Favorite(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name='favorites',
         verbose_name='Пользователь'
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        related_name='in_favorite',
         verbose_name='Рецепт'
     )
 
     class Meta:
         verbose_name = 'Избранный рецепт'
         verbose_name_plural = 'Избранные рецепты'
+        default_related_name = 'favorite'
 
         ordering = ['recipe']
         indexes = [
@@ -164,19 +155,18 @@ class ShoppingCart(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name='shopping_list',
         verbose_name='Пользователь'
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        related_name='in_shopping_list',
         verbose_name='Рецепт'
     )
 
     class Meta:
         verbose_name = 'Cписок покупок'
         verbose_name_plural = 'Список покупок'
+        default_related_name = 'shopping_cart'
 
         ordering = ['recipe']
         indexes = [
