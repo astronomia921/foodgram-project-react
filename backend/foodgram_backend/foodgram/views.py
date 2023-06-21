@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from .filters import RecipeFilter
 from .models import Recipe
-from .serializers import RecipeSerializer
+from .serializers import CreatePatchDeleteRecipeSerializer, RecipeSerializer
 
 from users.pagination import MyPagination
 
@@ -20,5 +20,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     search_fields = ['^author']
 
     def get_serializer_class(self):
-        if self.action == 'list' or self.action == 'retrieve':
+        if self.action in ('list', 'retrieve'):
             return RecipeSerializer
+        return CreatePatchDeleteRecipeSerializer

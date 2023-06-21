@@ -44,18 +44,21 @@ class RecipeModelAdmin(admin.ModelAdmin):
 class FavoriteAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'recipe')
     list_filter = ('user', 'recipe')
+    search_fields = ('recipe',)
 
 
 @admin.register(ShoppingCart)
 class ShoppingCartAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'recipe')
     list_filter = ('user', 'recipe')
+    search_fields = ('recipe',)
 
 
 @admin.register(RecipeTags)
 class RecipeTagsAdmin(admin.ModelAdmin):
     list_display = ('id', 'recipe', 'tag')
     list_filter = ('recipe', 'tag')
+    search_fields = ('recipe', 'tag')
     ordering = ('recipe',)
 
 
@@ -63,4 +66,5 @@ class RecipeTagsAdmin(admin.ModelAdmin):
 class RecipeIngredientAdmin(admin.ModelAdmin):
     list_display = ('id', 'recipe', 'ingredient', 'amount')
     list_filter = ('recipe', 'ingredient',)
+    search_fields = ('recipe', 'ingredient',)
     ordering = ('recipe',)

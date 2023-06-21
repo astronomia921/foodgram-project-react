@@ -75,6 +75,9 @@ class Recipe(models.Model):
 
 
 class RecipeIngredient(models.Model):
+    """
+    Модель для ингредиентов рецепта.
+    """
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE
@@ -102,6 +105,9 @@ class RecipeIngredient(models.Model):
 
 
 class RecipeTags(models.Model):
+    """
+    Модель для тегов рецепта.
+    """
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
@@ -152,6 +158,9 @@ class Favorite(models.Model):
 
 
 class ShoppingCart(models.Model):
+    """
+    Модель корзины покупок.
+    """
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,

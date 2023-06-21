@@ -97,13 +97,19 @@ class UserCreateSerializer(UserCreateSerializer):
         def validate_username(self, value):
             if not value.isalpha():
                 raise serializers.ValidationError(
-                    "Ник-нейм должно содержать только буквы")
+                    {
+                        'error': "Ник-нейм должно содержать только буквы."
+                        }
+                    )
             return value
 
         def validate_email(self, value):
             if not re.match(r'^[\w\.-]+@[\w\.-]+\.\w{2,}$', value):
                 raise serializers.ValidationError(
-                    "Некорректный адрес электронной почты")
+                    {
+                        'error': "Некорректный адрес электронной почты."
+                        }
+                    )
             return value
 
 
