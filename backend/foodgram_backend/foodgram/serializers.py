@@ -67,20 +67,22 @@ class RecipeSerializer(serializers.ModelSerializer):
         return serializers.data
 
     def get_is_favorited(self, obj):
-        user = self.context.get('user')
-        if not user:
+        request = self.context.get('request')
+        if request.user.is_anonymous:
             return False
-        return Favorite.objects.filter(user=user, author=obj).exists()
+        return Favorite.objects.filter(
+            recipe=obj, user=request.user).exists()
 
     def get_is_in_shopping_cart(self, obj):
-        user = self.context.get('user')
-        if not user:
+        request = self.context.get('request')
+        if request.user.is_anonymous:
             return False
-        return ShoppingCart.objects.filter(user=user, author=obj).exists()
+        return ShoppingCart.objects.filter(
+            recipe=obj, user=request.user).exists()
 
 
 class MiniRecipeIngredientSerialiser(serializers.ModelSerializer):
-    id = serializers.IntegerField()
+    id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
     amount = serializers.IntegerField()
 
     class Meta:
@@ -157,7 +159,8 @@ class CreatePatchDeleteRecipeSerializer(serializers.ModelSerializer):
                     'error': 'Нужно указать хотя бы 1 ингредиента в рецепте.'
                     }
                 )
-        if len(value) != len(set(value)):
+        ids = [item['id'] for item in value]
+        if len(ids) != len(set(ids)):
             raise serializers.ValidationError(
                 {
                     'error': 'Ингредиенты в рецепте должны быть уникальными.'

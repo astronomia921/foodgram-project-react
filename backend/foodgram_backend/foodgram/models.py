@@ -148,9 +148,13 @@ class Favorite(models.Model):
         default_related_name = 'favorite'
 
         ordering = ['recipe']
-        indexes = [
-            models.Index(fields=['user', 'recipe']),
-            ]
+        constraints = (
+            models.UniqueConstraint(
+                fields=('recipe', 'user'),
+                name='unique_favorite',
+                violation_error_message='Такой рецепт уже есть в "Избранном".'
+            ),
+        )
 
     def __str__(self):
         return (f"Рецепт: '{self.recipe}' добавлен в избранное"
@@ -178,9 +182,14 @@ class ShoppingCart(models.Model):
         default_related_name = 'shopping_cart'
 
         ordering = ['recipe']
-        indexes = [
-            models.Index(fields=['user', 'recipe']),
-            ]
+        constraints = (
+            models.UniqueConstraint(
+                fields=('recipe', 'user'),
+                name='shopping_recipe_user',
+                violation_error_message=(
+                    'Такой рецепт уже есть в "Списке покупок".')
+            ),
+        )
 
     def __str__(self):
         return (f"Рецепт: '{self.recipe}' добавлен в список покупок"

@@ -17,7 +17,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
                        filters.SearchFilter,)
     pagination_class = MyPagination
     filterset_class = RecipeFilter
-    search_fields = ['^author']
 
     def get_serializer_class(self):
         if self.action in ('list', 'retrieve'):

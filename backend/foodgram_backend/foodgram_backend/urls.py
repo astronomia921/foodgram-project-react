@@ -1,3 +1,5 @@
+import debug_toolbar
+
 from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
@@ -12,6 +14,7 @@ urlpatterns = [
         TemplateView.as_view(template_name='redoc.html'),
         name='redoc'
     ),
+    path('__debug__/', include(debug_toolbar.urls))
 ]
 
 if settings.DEBUG:
