@@ -3,8 +3,7 @@ from django.conf import settings
 from django.core.validators import MinValueValidator
 
 from foodgram_backend.settings import (
-    MAX_LENGTH_NAME, MAX_LENGTH_DIGITS,
-    MAX_DECIMAL_PLACES, LENGTH_HEADER)
+    MAX_LENGTH_NAME, LENGTH_HEADER)
 
 from ingredients.models import Ingredient
 from tags.models import Tag
@@ -86,9 +85,7 @@ class RecipeIngredient(models.Model):
         Ingredient,
         on_delete=models.CASCADE
     )
-    amount = models.DecimalField(
-        max_digits=MAX_LENGTH_DIGITS,
-        decimal_places=MAX_DECIMAL_PLACES,
+    amount = models.PositiveSmallIntegerField(
         validators=[
             MinValueValidator(
                 1, 'Колличество ингредиента в рецептне должно быть >= 1.'
@@ -146,7 +143,6 @@ class Favorite(models.Model):
         verbose_name = 'Избранный рецепт'
         verbose_name_plural = 'Избранные рецепты'
         default_related_name = 'favorite'
-
         ordering = ['recipe']
         constraints = (
             models.UniqueConstraint(

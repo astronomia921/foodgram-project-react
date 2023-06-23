@@ -18,6 +18,7 @@ class RecipeIngredientsSerializer(serializers.ModelSerializer):
     measurement_unit = serializers.SerializerMethodField(
         method_name='get_measurement_unit'
     )
+    amount = serializers.IntegerField(read_only=True)
 
     def get_id(self, obj):
         return obj.ingredient.id
@@ -30,17 +31,18 @@ class RecipeIngredientsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = RecipeIngredient
-        fields = ('id', 'name', 'measurement_unit', 'amount')
+        fields = ('id', 'name', 'measurement_unit', 'amount',)
 
 
 class RecipeSerializer(serializers.ModelSerializer):
     author = CustomUserSerializer(
         read_only=True,
-        default=serializers.CurrentUserDefault())
+        default=serializers.CurrentUserDefault()
+    )
     tags = TagSerializer(
         many=True,
-        read_only=True)
-
+        read_only=True
+    )
     ingredients = serializers.SerializerMethodField(
         method_name='get_ingredients'
     )
@@ -55,7 +57,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         model = Recipe
         fields = ('id', 'tags', 'author', 'ingredients',
                   'is_favorited', 'is_in_shopping_cart',
-                  'name', 'image', 'text', 'cooking_time')
+                  'name', 'image', 'text', 'cooking_time',)
 
     def get_ingredients(self, obj):
         list_ingredients = RecipeIngredient.objects.filter(recipe=obj)
@@ -82,12 +84,12 @@ class RecipeSerializer(serializers.ModelSerializer):
 
 
 class MiniRecipeIngredientSerialiser(serializers.ModelSerializer):
-    id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
-    amount = serializers.IntegerField()
+    id = serializers.IntegerField()
+    amount = serializers.IntegerField(write_only=True)
 
     class Meta:
-        model = Ingredient
-        fields = ('id', 'amount')
+        model = RecipeIngredient
+        fields = ('id', 'amount',)
 
     def validate_id(self, value):
         if not value:
@@ -111,7 +113,8 @@ class MiniRecipeIngredientSerialiser(serializers.ModelSerializer):
 class CreatePatchDeleteRecipeSerializer(serializers.ModelSerializer):
     author = CustomUserSerializer(
         read_only=True,
-        default=serializers.CurrentUserDefault())
+        default=serializers.CurrentUserDefault()
+    )
     image = Base64ImageField(
         required=False,
         allow_null=True,
@@ -143,12 +146,13 @@ class CreatePatchDeleteRecipeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = ('id', 'author', 'ingredients', 'tags', 'image',
-                  'name', 'text', 'cooking_time')
+        fields = ('id', 'author', 'ingredients',
+                  'tags', 'image', 'name',
+                  'text', 'cooking_time')
         extra_kwargs = {
-            'ingredients': {'required': True},
-            'tags': {'required': True},
-            'text': {'required': True},
+            'ingredients':  {'required': True},
+            'tags':         {'required': True},
+            'text':         {'required': True},
             'cooking_time': {'required': True},
         }
 
