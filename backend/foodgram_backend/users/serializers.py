@@ -33,7 +33,7 @@ class CustomUserSerializer(UserSerializer):
         fields = ('email', 'id', 'username', 'first_name',
                   'last_name', 'is_subscribed')
         extra_kwargs = {
-            'email': {'required': True},
+            'email':    {'required': True},
             'password': {'write_only': True},
         }
 
