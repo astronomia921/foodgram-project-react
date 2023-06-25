@@ -10,7 +10,6 @@ from foodgram.models import Recipe
 
 from .models import Follow
 
-
 User = get_user_model()
 
 

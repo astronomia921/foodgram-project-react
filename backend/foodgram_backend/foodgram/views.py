@@ -1,23 +1,21 @@
 from weasyprint import HTML
 
-from django_filters.rest_framework import DjangoFilterBackend
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 
-from rest_framework import filters, viewsets, status
+from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
+from rest_framework.permissions import (IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
-from rest_framework.permissions import (
-    IsAuthenticatedOrReadOnly, IsAuthenticated)
-
-from .filters import RecipeFilter
-from .models import Recipe, Favorite, ShoppingCart
-from .serializers import (
-    CreateUpdateDeleteRecipeSerializer,
-    RecipeSerializer,)
 
 from users.pagination import MyPagination
 from users.serializers import RecipeMinifiedSerializer
+
+from .filters import RecipeFilter
+from .models import Favorite, Recipe, ShoppingCart
+from .serializers import CreateUpdateDeleteRecipeSerializer, RecipeSerializer
 
 
 class RecipeViewSet(viewsets.ModelViewSet):

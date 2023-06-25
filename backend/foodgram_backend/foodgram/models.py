@@ -1,9 +1,8 @@
-from django.db import models
 from django.conf import settings
 from django.core.validators import MinValueValidator
+from django.db import models
 
-from foodgram_backend.settings import (
-    MAX_LENGTH_NAME, LENGTH_HEADER)
+from foodgram_backend.settings import LENGTH_HEADER, MAX_LENGTH_NAME
 
 from ingredients.models import Ingredient
 from tags.models import Tag
@@ -88,7 +87,7 @@ class RecipeIngredient(models.Model):
     amount = models.PositiveSmallIntegerField(
         validators=[
             MinValueValidator(
-                1, 'Колличество ингредиента в рецептне должно быть >= 1.'
+                1, 'Колличество ингредиента в рецепте должно быть >= 1.'
             )
         ]
     )

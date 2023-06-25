@@ -1,12 +1,13 @@
 from django_filters.rest_framework import DjangoFilterBackend
+
 from rest_framework import filters, viewsets
 from rest_framework.permissions import AllowAny
 
-from .serializers import IngredientSerializer
-from .models import Ingredient
-from .filters import IngredientFilter
-
 from users.pagination import MyPagination
+
+from .filters import IngredientFilter
+from .models import Ingredient
+from .serializers import IngredientSerializer
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):

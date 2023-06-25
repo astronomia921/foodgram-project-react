@@ -1,6 +1,7 @@
 from django.db import models
-from foodgram_backend.settings import (
-    MAX_LENGTH_NAME, MAX_LENGTH_UNIT, LENGTH_HEADER)
+
+from foodgram_backend.settings import (LENGTH_HEADER, MAX_LENGTH_NAME,
+                                       MAX_LENGTH_UNIT)
 
 
 class Ingredient(models.Model):

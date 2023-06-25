@@ -2,8 +2,8 @@ from rest_framework import viewsets
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny
 
-from .serializers import TagSerializer
 from .models import Tag
+from .serializers import TagSerializer
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):

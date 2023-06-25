@@ -1,6 +1,7 @@
 import django_filters as filters
 
 from tags.models import Tag
+
 from .models import Recipe
 
 STATUS_CHOICES = (

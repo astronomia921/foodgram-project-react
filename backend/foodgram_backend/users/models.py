@@ -1,10 +1,10 @@
-from django.db import models
 from django.conf import settings
 from django.contrib.auth import models as auth_models
+from django.db import models
+
+from foodgram_backend.settings import MAX_LENGTH_EMAIL, MAX_LENGTH_USERNAME
 
 from .validators import validate_username
-
-from foodgram_backend.settings import MAX_LENGTH_USERNAME, MAX_LENGTH_EMAIL
 
 
 class UserManager(auth_models.BaseUserManager):

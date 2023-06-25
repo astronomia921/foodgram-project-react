@@ -171,7 +171,12 @@ REST_FRAMEWORK = {
         'rest_framework.pagination.PageNumberPagination'),
     'PAGE_SIZE': PAGINATOR_PAGE,
 
-    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+    'TEST_REQUEST_RENDERER_CLASSES': [
+        'rest_framework.renderers.MultiPartRenderer',
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.TemplateHTMLRenderer'
+    ]
 }
 
 DJOSER = {

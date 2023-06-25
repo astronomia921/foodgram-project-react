@@ -1,10 +1,9 @@
-from django.db import models
 from django.core.validators import RegexValidator
+from django.db import models
 
-from foodgram_backend.settings import (
-    MAX_LENGTH_TAG, MAX_LENGTH_HEX,
-    MAX_LENGTH_SLUG, LENGTH_HEADER,
-    REGEX_VALIDATORS)
+from foodgram_backend.settings import (LENGTH_HEADER, MAX_LENGTH_HEX,
+                                       MAX_LENGTH_SLUG, MAX_LENGTH_TAG,
+                                       REGEX_VALIDATORS)
 
 
 # Create your models here.
