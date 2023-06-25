@@ -1,5 +1,7 @@
 from drf_extra_fields.fields import Base64ImageField
 
+from django.shortcuts import get_object_or_404
+
 from rest_framework import serializers
 
 from tags.serializers import TagSerializer
@@ -85,20 +87,11 @@ class RecipeSerializer(serializers.ModelSerializer):
 
 class MiniRecipeIngredientSerialiser(serializers.ModelSerializer):
     id = serializers.IntegerField()
-    amount = serializers.IntegerField(write_only=True)
+    amount = serializers.IntegerField()
 
     class Meta:
-        model = RecipeIngredient
+        model = Ingredient
         fields = ('id', 'amount',)
-
-    def validate_id(self, value):
-        if not value:
-            raise serializers.ValidationError(
-                {
-                    'error': 'Необходимо указать id ингредиента.'
-                    }
-                )
-        return value
 
     def validate_amount(self, value):
         if value < 1:
@@ -110,7 +103,7 @@ class MiniRecipeIngredientSerialiser(serializers.ModelSerializer):
         return value
 
 
-class CreatePatchDeleteRecipeSerializer(serializers.ModelSerializer):
+class CreateUpdateDeleteRecipeSerializer(serializers.ModelSerializer):
     author = CustomUserSerializer(
         read_only=True,
         default=serializers.CurrentUserDefault()
@@ -133,7 +126,7 @@ class CreatePatchDeleteRecipeSerializer(serializers.ModelSerializer):
         label='Ингредиент',
         help_text=(
             'Добавьте ингредиенты.'
-            'Они не должны повторяться и быть больше чем 1')
+            ' Они не должны повторяться и быть не меньше 1')
     )
     cooking_time = serializers.IntegerField(
         label='Время приготовления',
@@ -150,6 +143,7 @@ class CreatePatchDeleteRecipeSerializer(serializers.ModelSerializer):
                   'tags', 'image', 'name',
                   'text', 'cooking_time')
         extra_kwargs = {
+            'name':         {'required': True},
             'ingredients':  {'required': True},
             'tags':         {'required': True},
             'text':         {'required': True},
@@ -200,32 +194,52 @@ class CreatePatchDeleteRecipeSerializer(serializers.ModelSerializer):
         return value
 
     def create(self, validated_data):
-        ingredients_data = validated_data.pop('ingredients')
-        tags_data = validated_data.pop('tags')
-        recipe = Recipe.objects.create(**validated_data)
-        for ingredient_data in ingredients_data:
-            Ingredient.objects.create(recipe=recipe, **ingredient_data)
-        for tag_data in tags_data:
-            recipe.tags.add(tag_data)
+        author = self.context.get('request').user
+        tags = validated_data.pop('tags')
+        ingredients = validated_data.pop('ingredients')
+
+        recipe = Recipe.objects.create(author=author, **validated_data)
+        recipe.tags.set(tags)
+
+        for ingredient in ingredients:
+            amount = ingredient['amount']
+            ingredient = get_object_or_404(Ingredient, pk=ingredient['id'])
+
+            RecipeIngredient.objects.create(
+                recipe=recipe,
+                ingredient=ingredient,
+                amount=amount
+            )
+
         return recipe
 
     def update(self, instance, validated_data):
-        ingredients_data = validated_data.pop('ingredients')
-        tags_data = validated_data.pop('tags')
-        instance.name = validated_data.get('name',
-                                           instance.name)
-        instance.text = validated_data.get('text',
-                                           instance.text)
-        instance.cooking_time = validated_data.get('cooking_time',
-                                                   instance.cooking_time)
-        instance.image = validated_data.get('image',
-                                            instance.image)
-        instance.tags.set(tags_data)
-        instance.ingredients.all().delete()
-        for ingredient_data in ingredients_data:
-            Ingredient.objects.create(recipe=instance, **ingredient_data)
-        instance.save()
-        return instance
+        tags = validated_data.pop('tags', None)
+        if tags is not None:
+            instance.tags.set(tags)
+
+        ingredients = validated_data.pop('ingredients', None)
+        if ingredients is not None:
+            instance.ingredients.clear()
+
+            for ingredient in ingredients:
+                amount = ingredient['amount']
+                ingredient = get_object_or_404(Ingredient, pk=ingredient['id'])
+
+                RecipeIngredient.objects.update_or_create(
+                    recipe=instance,
+                    ingredient=ingredient,
+                    defaults={'amount': amount}
+                )
+
+        return super().update(instance, validated_data)
 
     def destroy(self, instance):
         instance.delete()
+
+    def to_representation(self, instance):
+        serializer = RecipeSerializer(
+            instance,
+            context={'request': self.context.get('request')}
+        )
+        return serializer.data

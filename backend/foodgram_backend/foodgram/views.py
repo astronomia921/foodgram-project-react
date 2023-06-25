@@ -13,7 +13,7 @@ from rest_framework.permissions import (
 from .filters import RecipeFilter
 from .models import Recipe, Favorite, ShoppingCart
 from .serializers import (
-    CreatePatchDeleteRecipeSerializer,
+    CreateUpdateDeleteRecipeSerializer,
     RecipeSerializer,)
 
 from users.pagination import MyPagination
@@ -31,7 +31,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == 'list' or self.action == 'retrieve':
             return RecipeSerializer
-        return CreatePatchDeleteRecipeSerializer
+        return CreateUpdateDeleteRecipeSerializer
 
     @action(
             methods=['get'],
