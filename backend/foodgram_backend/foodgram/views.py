@@ -6,8 +6,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import (IsAuthenticated,
-                                        IsAuthenticatedOrReadOnly)
+from rest_framework.permissions import (IsAuthenticated, )
 from rest_framework.response import Response
 
 from users.pagination import MyPagination
@@ -16,11 +15,12 @@ from users.serializers import RecipeMinifiedSerializer
 from .filters import RecipeFilter
 from .models import Favorite, Recipe, ShoppingCart
 from .serializers import CreateUpdateDeleteRecipeSerializer, RecipeSerializer
+from .permissions import IsAuthorOrAdmin
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+    permission_classes = (IsAuthorOrAdmin, )
     filter_backends = (DjangoFilterBackend,
                        filters.SearchFilter,)
     pagination_class = MyPagination
