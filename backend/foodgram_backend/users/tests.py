@@ -174,6 +174,13 @@ class FollowAPITestCase(TestCase):
             last_name="testlast",
             password="12314ssad"
             )
+        self.user_3 = User.objects.create_user(
+            email="alan@yandex.ru",
+            username="Allen",
+            first_name="Allen",
+            last_name="Dulles",
+            password="12314s22sad"
+            )
         self.follow = Follow.objects.create(
             user=self.user_1,
             author=self.user_2
@@ -194,20 +201,74 @@ class FollowAPITestCase(TestCase):
             text='текст блюда',
             cooking_time=2
         )
+        self.recipe_2 = Recipe.objects.create(
+            author=self.user_2,
+            name="Блюда№2",
+            image=None,
+            text='текст блюда',
+            cooking_time=3
+        )
+        self.recipe_3 = Recipe.objects.create(
+            author=self.user_3,
+            name="Блюда№3",
+            image=None,
+            text='текст блюда',
+            cooking_time=4
+        )
         self.recipe_1.ingredients.add(self.ingredient)
         self.recipe_1.tags.add(self.tag)
-        self.recipe_ingredient = RecipeIngredient.objects.create(
+        self.recipe_2.ingredients.add(self.ingredient)
+        self.recipe_2.tags.add(self.tag)
+        self.recipe_ingredient = RecipeIngredient.objects.get_or_create(
             recipe=self.recipe_1,
             ingredient=self.ingredient,
             amount=2,
-        )
-        self.recipe_count = Recipe.objects.count()
+            )
+        self.recipe_count = Recipe.objects.filter(author=self.user_2).count()
         self.is_subscribed = Follow.objects.filter(
             user=self.user_1, author=self.user_2).exists()
-
         self.client = APIClient()
         self.client_2 = APIClient()
         self.client.force_authenticate(user=self.user_1)
+
+    def test_subscribe(self):
+        url = '/api/users/3/subscribe/'
+        response_1 = self.client.post(url, format="json")
+        self.assertEqual(response_1.status_code, HTTPStatus.CREATED)
+        user_data = response_1.json()
+        self.recipe_count_2 = Recipe.objects.filter(author=self.user_3).count()
+        for key in user_data:
+            self.assertEqual(response_1.json()[key], user_data[key])
+
+        recipe_data_1 = user_data['recipes'][0]
+        self.assertEqual(recipe_data_1['id'], self.recipe_3.id)
+        self.assertEqual(recipe_data_1['name'], self.recipe_3.name)
+        self.assertEqual(recipe_data_1['image'], None)
+        self.assertEqual(
+            recipe_data_1['cooking_time'], self.recipe_3.cooking_time)
+
+        response_2 = self.client_2.post(url, format="json")
+        self.assertEqual(response_2.status_code, HTTPStatus.UNAUTHORIZED)
+
+        url_3 = '/api/users/4/subscribe/'
+        response_3 = self.client.post(url_3, format="json")
+        self.assertEqual(response_3.status_code, HTTPStatus.NOT_FOUND)
+
+        url_self = '/api/users/1/subscribe/'
+        response_self = self.client.post(url_self, format="json")
+        self.assertEqual(response_self.status_code, HTTPStatus.BAD_REQUEST)
+
+        url_del = '/api/users/3/subscribe/'
+        response_del = self.client.delete(url_del, format="json")
+        self.assertEqual(response_del.status_code, HTTPStatus.NO_CONTENT)
+
+        url_del_2 = '/api/users/4/subscribe/'
+        response_del_2 = self.client.delete(url_del_2, format="json")
+        self.assertEqual(response_del_2.status_code, HTTPStatus.NOT_FOUND)
+
+        url_del_3 = '/api/users/3/subscribe/'
+        response_del_3 = self.client_2.delete(url_del_3, format="json")
+        self.assertEqual(response_del_3.status_code, HTTPStatus.UNAUTHORIZED)
 
     def test_subscriptions(self):
         response = self.client.get('/api/users/subscriptions/')
@@ -223,11 +284,13 @@ class FollowAPITestCase(TestCase):
                     'last_name':     self.user_2.last_name,
                     'is_subscribed': self.is_subscribed,
                     "recipes": [{
-                            "id": self.recipe_1.id,
-                            "name": self.recipe_1.name,
-                            "image": self.recipe_1.image,
-                            "cooking_time": self.recipe_1.cooking_time
+                            "id": self.recipe_2.id,
+                            "name": self.recipe_2.name,
+                            "image": self.recipe_2.image,
+                            "cooking_time": self.recipe_2.cooking_time
                             }],
                     "recipes_count": self.recipe_count
                 }, response.json()['results'][0]
             )
+        response = self.client_2.get('/api/users/subscriptions/')
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)

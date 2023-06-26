@@ -89,7 +89,8 @@ class RecipeIngredient(models.Model):
             MinValueValidator(
                 1, 'Колличество ингредиента в рецепте должно быть >= 1.'
             )
-        ]
+        ],
+        default=1
     )
 
     class Meta:
