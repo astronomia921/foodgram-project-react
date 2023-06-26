@@ -9,14 +9,13 @@ from .validators import validate_username
 
 class UserManager(auth_models.BaseUserManager):
     """Кастомный UserManager."""
-    def create_user(
-        self,
-        first_name: str, last_name: str,
-        username: str, email: str,
-        password: str = None,
-        is_staff: bool = False,
-        is_superuser: bool = False,
-            ):
+    def create_user(self,
+                    first_name: str, last_name: str,
+                    username: str, email: str,
+                    password: str = None,
+                    is_staff: bool = False,
+                    is_superuser: bool = False,
+                    ):
         if not email:
             raise ValueError('Пользователь должен иметь email')
         if not first_name:
@@ -38,12 +37,11 @@ class UserManager(auth_models.BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(
-        self,
-        first_name: str, last_name: str,
-        username: str, email: str,
-        password: str = None,
-            ):
+    def create_superuser(self,
+                         first_name: str, last_name: str,
+                         username: str, email: str,
+                         password: str = None,
+                         ):
         user = self.create_user(
             email=email,
             first_name=first_name,
@@ -130,7 +128,7 @@ class Follow(models.Model):
                 name='different_users',
                 violation_error_message=(
                     'Автор и подписчик должны быть разными людьми.')
-                ),
+            ),
         ]
 
     def __str__(self):

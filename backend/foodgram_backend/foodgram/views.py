@@ -32,12 +32,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return CreateUpdateDeleteRecipeSerializer
 
     @action(
-            methods=['get'],
-            detail=False,
-            permission_classes=[IsAuthenticated],
-            url_path='download_shopping_cart',
-            url_name='download_shopping_cart',
-            )
+        methods=['get'],
+        detail=False,
+        permission_classes=[IsAuthenticated],
+        url_path='download_shopping_cart',
+        url_name='download_shopping_cart',
+    )
     def download_shopping_cart(self, request):
         user = request.user
         if user.is_anonymous:
@@ -70,12 +70,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return response
 
     @action(
-            methods=['post', 'delete'],
-            detail=True,
-            permission_classes=[IsAuthenticated],
-            url_path='shopping_cart',
-            url_name='shopping_cart',
-            )
+        methods=['post', 'delete'],
+        detail=True,
+        permission_classes=[IsAuthenticated],
+        url_path='shopping_cart',
+        url_name='shopping_cart',
+    )
     def shopping_cart(self, request, pk=None):
         user = request.user
         if user.is_anonymous:
@@ -95,7 +95,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                     context={
                         'request': request,
                         'recipe': recipe
-                        }
+                    }
                 )
                 return Response(
                     serializer.data, status=status.HTTP_201_CREATED)
@@ -118,12 +118,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
                     status=status.HTTP_204_NO_CONTENT)
 
     @action(
-            methods=['post', 'delete'],
-            detail=True,
-            permission_classes=[IsAuthenticated],
-            url_path='favorite',
-            url_name='favorite',
-            )
+        methods=['post', 'delete'],
+        detail=True,
+        permission_classes=[IsAuthenticated],
+        url_path='favorite',
+        url_name='favorite',
+    )
     def favorite(self, request, pk=None):
         user = request.user
         if user.is_anonymous:
@@ -143,7 +143,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                     context={
                         'request': request,
                         'recipe': recipe
-                        }
+                    }
                 )
                 return Response(
                     serializer.data, status=status.HTTP_201_CREATED)

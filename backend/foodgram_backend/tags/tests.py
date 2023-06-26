@@ -19,7 +19,7 @@ class TagAPITestCase(TestCase):
             first_name="Вася",
             last_name="Пупкин",
             password="12331214ssad"
-            )
+        )
         self.tags = Tag.objects.create(
             name='Завтрак',
             color='#E26C2D',
@@ -40,11 +40,11 @@ class TagAPITestCase(TestCase):
         self.assertEqual(len(response.json()['results']), 2)
         self.assertDictContainsSubset(
             {
-                "name":  self.tags.name,
+                "name": self.tags.name,
                 "color": self.tags.color,
-                "slug":  self.tags.slug
-                },  response.json()['results'][0]
-            )
+                "slug": self.tags.slug
+            }, response.json()['results'][0]
+        )
 
     def test_get_tags_by_id(self):
         response = self.client.get('/api/tags/1/')
@@ -54,6 +54,6 @@ class TagAPITestCase(TestCase):
             "name": "Завтрак",
             "color": "#E26C2D",
             "slug": "breakfast"
-            }
+        }
         self.assertEqual(response.data, expectation)
         self.assertEqual(response_2.status_code, HTTPStatus.NOT_FOUND)

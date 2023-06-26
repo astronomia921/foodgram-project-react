@@ -32,7 +32,7 @@ class CustomUserSerializer(UserSerializer):
         fields = ('email', 'id', 'username', 'first_name',
                   'last_name', 'is_subscribed')
         extra_kwargs = {
-            'email':    {'required': True},
+            'email': {'required': True},
             'password': {'write_only': True},
         }
 
@@ -68,9 +68,9 @@ class UserCreateSerializer(UserCreateSerializer):
             UniqueValidator(
                 message='Такой email уже занят',
                 queryset=User.objects.all()
-                )
-            ]
-        )
+            )
+        ]
+    )
     username = serializers.CharField(
         validators=[
             UniqueValidator(
@@ -98,8 +98,8 @@ class UserCreateSerializer(UserCreateSerializer):
                 raise serializers.ValidationError(
                     {
                         'error': "Ник-нейм должно содержать только буквы."
-                        }
-                    )
+                    }
+                )
             return value
 
         def validate_email(self, value):
@@ -107,8 +107,8 @@ class UserCreateSerializer(UserCreateSerializer):
                 raise serializers.ValidationError(
                     {
                         'error': "Некорректный адрес электронной почты."
-                        }
-                    )
+                    }
+                )
             return value
 
 

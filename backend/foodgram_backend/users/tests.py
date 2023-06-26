@@ -63,21 +63,21 @@ class UserAPITestCase(TestCase):
             first_name="Вася",
             last_name="Пупкин",
             password="12331214ssad"
-            )
+        )
         self.user_2 = User.objects.create_user(
             email="dmitry_zavorotnii@yandex.ru",
             username="Dmitry",
             first_name="Dmitry",
             last_name="Zavorotny",
             password="12314ssad"
-            )
+        )
         self.user_3 = User.objects.create_user(
             email="alan@yandex.ru",
             username="Allen",
             first_name="Allen",
             last_name="Dulles",
             password="12314s22sad"
-            )
+        )
         self.client = APIClient()
         self.client_2 = APIClient()
         self.client.force_authenticate(user=self.user_1)
@@ -89,14 +89,14 @@ class UserAPITestCase(TestCase):
         self.assertEqual(len(response.json()['results']), 3)
         self.assertDictContainsSubset(
             {
-                'email':         self.user_3.email,
-                'id':            self.user_3.id,
-                'username':      self.user_3.username,
-                'first_name':    self.user_3.first_name,
-                'last_name':     self.user_3.last_name,
+                'email': self.user_3.email,
+                'id': self.user_3.id,
+                'username': self.user_3.username,
+                'first_name': self.user_3.first_name,
+                'last_name': self.user_3.last_name,
                 'is_subscribed': False
             }, response.json()['results'][0]
-            )
+        )
 
     def test_get_user_by_me_id(self):
         response_1 = self.client.get('/api/users/me/')
@@ -111,7 +111,7 @@ class UserAPITestCase(TestCase):
             "first_name": "Вася",
             "last_name": "Пупкин",
             "is_subscribed": False
-            }
+        }
         self.assertEqual(response_1.data, expectation)
         self.assertEqual(response_2.data, expectation)
 
@@ -122,12 +122,12 @@ class UserAPITestCase(TestCase):
     def test_set_password(self):
         url = '/api/users/set_password/'
         data_1 = {
-                "new_password": "ssad12331214",
-                "current_password": "12331214ssad"
-                }
+            "new_password": "ssad12331214",
+            "current_password": "12331214ssad"
+        }
         data_2 = {
-                "new_password": "ssad12331214",
-                }
+            "new_password": "ssad12331214",
+        }
         response_1 = self.client.post(url, data_1, format="json")
         response_2 = self.client.post(url, data_2, format="json")
         response_3 = self.client_2.post(url, data_1, format="json")
@@ -166,21 +166,21 @@ class FollowAPITestCase(TestCase):
             first_name="Вася",
             last_name="Пупкин",
             password="12331214ssad"
-            )
+        )
         self.user_2 = User.objects.create_user(
             email="test@yandex.ru",
             username="testuser",
             first_name="testname",
             last_name="testlast",
             password="12314ssad"
-            )
+        )
         self.user_3 = User.objects.create_user(
             email="alan@yandex.ru",
             username="Allen",
             first_name="Allen",
             last_name="Dulles",
             password="12314s22sad"
-            )
+        )
         self.follow = Follow.objects.create(
             user=self.user_1,
             author=self.user_2
@@ -223,7 +223,7 @@ class FollowAPITestCase(TestCase):
             recipe=self.recipe_1,
             ingredient=self.ingredient,
             amount=2,
-            )
+        )
         self.recipe_count = Recipe.objects.filter(author=self.user_2).count()
         self.is_subscribed = Follow.objects.filter(
             user=self.user_1, author=self.user_2).exists()
@@ -276,21 +276,23 @@ class FollowAPITestCase(TestCase):
         self.assertEqual(response['content-type'], 'application/json')
         self.assertEqual(len(response.json()['results']), 1)
         self.assertDictContainsSubset(
-                {
-                    'email':         self.user_2.email,
-                    'id':            self.user_2.id,
-                    'username':      self.user_2.username,
-                    'first_name':    self.user_2.first_name,
-                    'last_name':     self.user_2.last_name,
-                    'is_subscribed': self.is_subscribed,
-                    "recipes": [{
-                            "id": self.recipe_2.id,
-                            "name": self.recipe_2.name,
-                            "image": self.recipe_2.image,
-                            "cooking_time": self.recipe_2.cooking_time
-                            }],
-                    "recipes_count": self.recipe_count
-                }, response.json()['results'][0]
-            )
+            {
+                'email': self.user_2.email,
+                'id': self.user_2.id,
+                'username': self.user_2.username,
+                'first_name': self.user_2.first_name,
+                'last_name': self.user_2.last_name,
+                'is_subscribed': self.is_subscribed,
+                "recipes": [
+                    {
+                        "id": self.recipe_2.id,
+                        "name": self.recipe_2.name,
+                        "image": self.recipe_2.image,
+                        "cooking_time": self.recipe_2.cooking_time
+                    }
+                ],
+                "recipes_count": self.recipe_count
+            }, response.json()['results'][0]
+        )
         response = self.client_2.get('/api/users/subscriptions/')
         self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)

@@ -79,7 +79,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         return Favorite.objects.filter(
             recipe=obj,
             user=request.user
-            ).exists()
+        ).exists()
 
     def get_is_in_shopping_cart(self, obj):
         request = self.context.get('request')
@@ -88,7 +88,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         return ShoppingCart.objects.filter(
             recipe=obj,
             user=request.user
-            ).exists()
+        ).exists()
 
 
 class MiniRecipeIngredientSerialiser(serializers.ModelSerializer):
@@ -104,8 +104,8 @@ class MiniRecipeIngredientSerialiser(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 {
                     'error': 'Колличество ингредиента должно быть >= 1.'
-                    }
-                )
+                }
+            )
         return value
 
 
@@ -149,10 +149,10 @@ class CreateUpdateDeleteRecipeSerializer(serializers.ModelSerializer):
                   'tags', 'image', 'name',
                   'text', 'cooking_time')
         extra_kwargs = {
-            'name':         {'required': True},
-            'ingredients':  {'required': True},
-            'tags':         {'required': True},
-            'text':         {'required': True},
+            'name': {'required': True},
+            'ingredients': {'required': True},
+            'tags': {'required': True},
+            'text': {'required': True},
             'cooking_time': {'required': True},
         }
 
@@ -161,15 +161,15 @@ class CreateUpdateDeleteRecipeSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 {
                     'error': 'Нужно указать хотя бы 1 ингредиента в рецепте.'
-                    }
-                )
+                }
+            )
         ids = [item['id'] for item in value]
         if len(ids) != len(set(ids)):
             raise serializers.ValidationError(
                 {
                     'error': 'Ингредиенты в рецепте должны быть уникальными.'
-                    }
-                )
+                }
+            )
         return value
 
     def validate_tags(self, value):
@@ -177,8 +177,8 @@ class CreateUpdateDeleteRecipeSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 {
                     'error': 'Нужно добавить хотя бы 1 тег.'
-                    }
-                )
+                }
+            )
         return value
 
     def validate_cooking_time(self, value):
@@ -186,8 +186,8 @@ class CreateUpdateDeleteRecipeSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 {
                     'error': 'Время приготовление должны быть >= 1 минуте.'
-                    }
-                )
+                }
+            )
         return value
 
     def validate_name(self, value):
@@ -195,8 +195,8 @@ class CreateUpdateDeleteRecipeSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 {
                     'error': 'Название должно быть <= 200 символам.'
-                    }
-                )
+                }
+            )
         return value
 
     def create(self, validated_data):

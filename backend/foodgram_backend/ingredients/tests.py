@@ -19,7 +19,7 @@ class IngredientAPITestCase(TestCase):
             first_name="Вася",
             last_name="Пупкин",
             password="12331214ssad"
-            )
+        )
         self.ingredient = Ingredient.objects.create(
             name="Капуста",
             measurement_unit="кг"
@@ -38,10 +38,10 @@ class IngredientAPITestCase(TestCase):
         self.assertEqual(len(response.json()['results']), 2)
         self.assertDictContainsSubset(
             {
-                "name":  self.ingredient.name,
+                "name": self.ingredient.name,
                 "measurement_unit": self.ingredient.measurement_unit,
-                },  response.json()['results'][0]
-            )
+            }, response.json()['results'][0]
+        )
 
     def test_get_ingredients_by_id(self):
         response = self.client.get('/api/ingredients/1/')
@@ -50,6 +50,6 @@ class IngredientAPITestCase(TestCase):
             "id": 1,
             "name": "Капуста",
             "measurement_unit": "кг"
-            }
+        }
         self.assertEqual(response.data, expectation)
         self.assertEqual(response_2.status_code, HTTPStatus.NOT_FOUND)

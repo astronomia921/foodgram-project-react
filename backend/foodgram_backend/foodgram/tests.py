@@ -22,21 +22,21 @@ class RecipeAPITestCase(TestCase):
             first_name="Вася",
             last_name="Пупкин",
             password="12331214ssad"
-            )
+        )
         self.user_2 = User.objects.create_user(
             email="test@yandex.ru",
             username="testuser",
             first_name="testname",
             last_name="testlast",
             password="12314ssad"
-            )
+        )
         self.user_3 = User.objects.create_user(
             email="test3@yandex.ru",
             username="testuser3",
             first_name="testname3",
             last_name="testlast3",
             password="12314ssad"
-            )
+        )
         self.is_subscribed = Follow.objects.filter(
             user=self.user_1, author=self.user_2).exists()
         self.recipe_1 = Recipe.objects.create(
@@ -61,7 +61,7 @@ class RecipeAPITestCase(TestCase):
             recipe=self.recipe_1,
             ingredient=self.ingredient,
             defaults={'amount': 2},
-            )
+        )
         self.favorited = Favorite.objects.create(
             user=self.user_1,
             recipe=self.recipe_1
@@ -96,16 +96,16 @@ class RecipeAPITestCase(TestCase):
                     "name": self.tag.name,
                     "color": self.tag.color,
                     "slug": self.tag.slug
-                    }
-                ],
+                }
+            ],
             "author": {
-                    "email": self.user_2.email,
-                    "id": self.user_2.id,
-                    "username": self.user_2.username,
-                    "first_name": self.user_2.first_name,
-                    "last_name": self.user_2.last_name,
-                    "is_subscribed": self.is_subscribed
-                    },
+                "email": self.user_2.email,
+                "id": self.user_2.id,
+                "username": self.user_2.username,
+                "first_name": self.user_2.first_name,
+                "last_name": self.user_2.last_name,
+                "is_subscribed": self.is_subscribed
+            },
             "ingredients": [
                 {
                     "id": self.ingredient.id,
@@ -113,27 +113,29 @@ class RecipeAPITestCase(TestCase):
                     "measurement_unit": self.ingredient.measurement_unit,
                     "amount": self.recipe_ingredient.amount
                 }
-                ],
+            ],
             "is_favorited": self.is_favorited,
             "is_in_shopping_cart": self.is_in_shopping_cart,
             "name": self.recipe_1.name,
             "image": self.recipe_1.image,
             "text": self.recipe_1.text,
             "cooking_time": self.recipe_1.cooking_time
-                }, response.json()['results'][0]
-            )
+        }, response.json()['results'][0]
+        )
 
     def test_recipe_by_id(self):
         response = self.client.get('/api/recipes/1/')
         self.assertEqual(response.status_code, HTTPStatus.OK)
         expectation = {
             "id": 1,
-            "tags": [{
+            "tags": [
+                {
                     "id": 1,
                     "name": "Завтрак",
                     "color": "#E26C2D",
                     "slug": "breakfast"
-                    }],
+                }
+            ],
             "author": {
                 "email": "test@yandex.ru",
                 "id": 2,
@@ -141,20 +143,22 @@ class RecipeAPITestCase(TestCase):
                 "first_name": "testname",
                 "last_name": "testlast",
                 "is_subscribed": False
-                },
-            "ingredients": [{
+            },
+            "ingredients": [
+                {
                     "id": 1,
                     "name": "Капуста",
                     "measurement_unit": "кг",
                     "amount": 1
-                    }],
+                }
+            ],
             "is_favorited": True,
             "is_in_shopping_cart": True,
             "name": "Блюда№1",
             "image": None,
             "text": "текст блюда",
             "cooking_time": 2
-            }
+        }
         self.assertDictContainsSubset(expectation, response.data)
 
     def test_create_recipe(self):
@@ -172,7 +176,7 @@ class RecipeAPITestCase(TestCase):
             "name": "Блюда№2",
             "text": "текст блюда",
             "cooking_time": 2
-            }
+        }
         response = self.client.post('/api/recipes/', payload, format="json")
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
         response_2 = self.client_2.post('/api/recipes/',
@@ -192,7 +196,7 @@ class RecipeAPITestCase(TestCase):
             "name": "Блюда№2",
             "text": "текст блюда",
             "cooking_time": 2
-            }
+        }
         response_3 = self.client.post('/api/recipes/',
                                       payload_not_valid, format="json")
         self.assertEqual(response_3.status_code, HTTPStatus.BAD_REQUEST)
@@ -211,7 +215,7 @@ class RecipeAPITestCase(TestCase):
             "name": "Блюда№2",
             "text": "текст блюда",
             "cooking_time": 2
-            }
+        }
         response_4 = self.client.post('/api/recipes/',
                                       payload_not_found, format="json")
         self.assertEqual(response_4.status_code, HTTPStatus.NOT_FOUND)
@@ -231,7 +235,7 @@ class RecipeAPITestCase(TestCase):
             "name": "Блюда№2",
             "text": "текст блюда",
             "cooking_time": 2
-            }
+        }
         response = self.client.post('/api/recipes/', payload, format="json")
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
         payload_update = {
@@ -248,7 +252,7 @@ class RecipeAPITestCase(TestCase):
             "name": "Блюда№2",
             "text": "текст блюда",
             "cooking_time": 2
-            }
+        }
         response_2 = self.client.patch('/api/recipes/2/',
                                        payload_update, format="json")
         self.assertEqual(response_2.status_code, HTTPStatus.OK)
@@ -282,7 +286,7 @@ class ShoppingCartFavoriteAPITestCase(TestCase):
             first_name="Вася",
             last_name="Пупкин",
             password="12331214ssad"
-            )
+        )
         self.recipe_1 = Recipe.objects.create(
             author=self.user_1,
             name="Блюда№1",

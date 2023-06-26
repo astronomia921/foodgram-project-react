@@ -23,12 +23,12 @@ class AccountViewSet(UserViewSet):
     search_fields = ['^username', '^email', '^first_name', '^last_name']
 
     @action(
-            methods=['get'],
-            detail=False,
-            permission_classes=[IsAuthenticated],
-            url_path='subscriptions',
-            url_name='subscriptions',
-            )
+        methods=['get'],
+        detail=False,
+        permission_classes=[IsAuthenticated],
+        url_path='subscriptions',
+        url_name='subscriptions',
+    )
     def subscriptions(self, request):
         user = self.request.user
         if user.is_anonymous:
@@ -41,12 +41,12 @@ class AccountViewSet(UserViewSet):
         return self.get_paginated_response(serializer.data)
 
     @action(
-            methods=['post', 'delete'],
-            detail=True,
-            permission_classes=[IsAuthenticated],
-            url_path='subscribe',
-            url_name='subscribe',
-            )
+        methods=['post', 'delete'],
+        detail=True,
+        permission_classes=[IsAuthenticated],
+        url_path='subscribe',
+        url_name='subscribe',
+    )
     def subscribe(self, request, id=None):
         user = self.request.user
         author = get_object_or_404(User, id=id)
@@ -65,7 +65,7 @@ class AccountViewSet(UserViewSet):
                 return Response(
                     serializer.data,
                     status=status.HTTP_201_CREATED,
-                    )
+                )
             else:
                 return Response(
                     {'error': 'Вы не можете подписаться на самого себя'},
@@ -86,4 +86,4 @@ class AccountViewSet(UserViewSet):
                     f' {user.first_name} {user.last_name}не была оформлена.')
                  },
                 status=status.HTTP_400_BAD_REQUEST
-                )
+            )
