@@ -7,7 +7,6 @@ from foodgram_backend.settings import REGEX_USER
 def validate_username(value):
     """
     Метод проверки username на корректность.
-    regex=^[\w.@+-]+\z.
     """
     if not REGEX_USER.match(value):
         raise ValidationError(

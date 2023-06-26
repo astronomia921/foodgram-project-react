@@ -6,7 +6,6 @@ from foodgram_backend.settings import (LENGTH_HEADER, MAX_LENGTH_HEX,
                                        REGEX_VALIDATORS)
 
 
-# Create your models here.
 class Tag(models.Model):
     """
     Тег для рецепта.

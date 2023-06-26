@@ -14,9 +14,11 @@ from .models import Favorite, Recipe, RecipeIngredient, ShoppingCart
 
 class RecipeIngredientsSerializer(serializers.ModelSerializer):
     id = serializers.SerializerMethodField(
-        method_name='get_id')
+        method_name='get_id'
+    )
     name = serializers.SerializerMethodField(
-        method_name='get_name')
+        method_name='get_name'
+    )
     measurement_unit = serializers.SerializerMethodField(
         method_name='get_measurement_unit'
     )
@@ -75,14 +77,18 @@ class RecipeSerializer(serializers.ModelSerializer):
         if request.user.is_anonymous:
             return False
         return Favorite.objects.filter(
-            recipe=obj, user=request.user).exists()
+            recipe=obj,
+            user=request.user
+            ).exists()
 
     def get_is_in_shopping_cart(self, obj):
         request = self.context.get('request')
         if request.user.is_anonymous:
             return False
         return ShoppingCart.objects.filter(
-            recipe=obj, user=request.user).exists()
+            recipe=obj,
+            user=request.user
+            ).exists()
 
 
 class MiniRecipeIngredientSerialiser(serializers.ModelSerializer):

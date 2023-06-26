@@ -29,12 +29,12 @@ class RecipeModelAdmin(admin.ModelAdmin):
     def get_ingredient(self, obj):
         return ', '.join(
             [str(field) for field in obj.ingredients.all()]
-            )
+        )
 
-    def get_tag(sel, obj):
+    def get_tag(self, obj):
         return ', '.join(
             [str(field) for field in obj.tags.all()]
-            )
+        )
 
     get_ingredient.short_description = 'Ингредиенты'
     get_tag.short_description = 'Теги'

@@ -312,9 +312,9 @@ class ShoppingCartFavoriteAPITestCase(TestCase):
         response = self.client.post(url, data, format="json")
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
         user_data = response.json()
-        self.recipe_count_2 = ShoppingCart.objects.filter(
+        recipe_count_2 = ShoppingCart.objects.filter(
             user=self.user_1).count()
-        self.assertEqual(self.recipe_count_2, 1)
+        self.assertEqual(recipe_count_2, 1)
         for key in user_data:
             self.assertEqual(response.json()[key], user_data[key])
         response_2 = self.client_2.post(url, data, format="json")
