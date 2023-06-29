@@ -1,5 +1,6 @@
 from weasyprint import HTML
 
+from django.db.models import Exists, OuterRef
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
@@ -14,12 +15,13 @@ from users.serializers import RecipeMinifiedSerializer
 
 from .filters import RecipeFilter
 from .models import Favorite, Recipe, ShoppingCart
-from .serializers import CreateUpdateDeleteRecipeSerializer, RecipeSerializer
+from .serializers import (CreateUpdateDeleteRecipeSerializer,
+                          RecipeSerializer)
 from .permissions import IsAuthorOrAdmin
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
-    queryset = Recipe.objects.all()
+    # queryset = Recipe.objects.all()
     permission_classes = (IsAuthorOrAdmin, )
     filter_backends = (DjangoFilterBackend,
                        filters.SearchFilter,)
@@ -27,9 +29,23 @@ class RecipeViewSet(viewsets.ModelViewSet):
     filterset_class = RecipeFilter
 
     def get_serializer_class(self):
-        if self.action == 'list' or self.action == 'retrieve':
+        if self.action in ('list', 'retrieve',):
             return RecipeSerializer
         return CreateUpdateDeleteRecipeSerializer
+
+    def get_queryset(self):
+        favorite = Favorite.objects.filter(
+            user=self.request.user,
+            recipe=OuterRef('pk')
+        )
+        shopping_cart = ShoppingCart.objects.filter(
+            user=self.request.user,
+            recipe=OuterRef('pk')
+        )
+        return Recipe.objects.annotate(
+            is_favorited=Exists(favorite),
+            is_in_shopping_cart=Exists(shopping_cart)
+        )
 
     @action(
         methods=['get'],
@@ -39,10 +55,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
         url_name='download_shopping_cart',
     )
     def download_shopping_cart(self, request):
-        user = request.user
-        if user.is_anonymous:
+        if request.user.is_anonymous:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
-        shopping_cart_items = ShoppingCart.objects.filter(user=user)
+        shopping_cart_items = request.user.shopping_cart.all()
         recipe_instances = [item.recipe for item in shopping_cart_items]
         serializer = RecipeSerializer(
             recipe_instances, many=True, context={'request': request})
@@ -77,19 +92,18 @@ class RecipeViewSet(viewsets.ModelViewSet):
         url_name='shopping_cart',
     )
     def shopping_cart(self, request, pk=None):
-        user = request.user
-        if user.is_anonymous:
+        if request.user.is_anonymous:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
         recipe = get_object_or_404(Recipe, pk=pk)
         if request.method == 'POST':
             if ShoppingCart.objects.filter(
-                    user=user, recipe=recipe).exists():
+                    user=request.user, recipe=recipe).exists():
                 return Response(
                     {'error': 'Рецепт уже есть в списке покупок.'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
             else:
-                ShoppingCart.objects.create(user=user, recipe=recipe)
+                ShoppingCart.objects.create(user=request.user, recipe=recipe)
                 serializer = RecipeMinifiedSerializer(
                     recipe,
                     context={
@@ -101,7 +115,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                     serializer.data, status=status.HTTP_201_CREATED)
         elif request.method == 'DELETE':
             if not ShoppingCart.objects.filter(
-                    user=user, recipe=recipe).exists():
+                    user=request.user, recipe=recipe).exists():
                 return Response(
                     {'error': 'Рецепт уже удалён из списка покупок.'},
                     status=status.HTTP_400_BAD_REQUEST
@@ -109,7 +123,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             else:
                 shopping_cart = get_object_or_404(
                     ShoppingCart,
-                    user=user,
+                    user=request.user,
                     recipe=recipe
                 )
                 shopping_cart.delete()
@@ -125,19 +139,18 @@ class RecipeViewSet(viewsets.ModelViewSet):
         url_name='favorite',
     )
     def favorite(self, request, pk=None):
-        user = request.user
-        if user.is_anonymous:
+        if request.user.is_anonymous:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
         recipe = get_object_or_404(Recipe, pk=pk)
         if request.method == 'POST':
             if Favorite.objects.filter(
-                    user=user, recipe=recipe).exists():
+                    user=request.user, recipe=recipe).exists():
                 return Response(
                     {'error': 'Рецепт уже есть в Избранном.'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
             else:
-                Favorite.objects.create(user=user, recipe=recipe)
+                Favorite.objects.create(user=request.user, recipe=recipe)
                 serializer = RecipeMinifiedSerializer(
                     recipe,
                     context={
@@ -149,7 +162,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                     serializer.data, status=status.HTTP_201_CREATED)
         elif request.method == 'DELETE':
             if not Favorite.objects.filter(
-                    user=user, recipe=recipe).exists():
+                    user=request.user, recipe=recipe).exists():
                 return Response(
                     {'error': 'Рецепт уже удалён из Избранного.'},
                     status=status.HTTP_400_BAD_REQUEST
@@ -157,7 +170,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             else:
                 favorite = get_object_or_404(
                     Favorite,
-                    user=user,
+                    user=request.user,
                     recipe=recipe
                 )
                 favorite .delete()

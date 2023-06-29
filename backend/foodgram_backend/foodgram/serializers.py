@@ -9,29 +9,20 @@ from tags.models import Tag
 from tags.serializers import TagSerializer
 from users.serializers import CustomUserSerializer
 
-from .models import Favorite, Recipe, RecipeIngredient, ShoppingCart
+from .models import Recipe, RecipeIngredient, Favorite, ShoppingCart as Cart
 
 
 class RecipeIngredientsSerializer(serializers.ModelSerializer):
-    id = serializers.SerializerMethodField(
-        method_name='get_id'
+    id = serializers.ReadOnlyField(
+        source='ingredient.id'
     )
-    name = serializers.SerializerMethodField(
-        method_name='get_name'
+    name = serializers.ReadOnlyField(
+        source='ingredient.name'
     )
-    measurement_unit = serializers.SerializerMethodField(
-        method_name='get_measurement_unit'
+    measurement_unit = serializers.ReadOnlyField(
+        source='ingredient.measurement_unit'
     )
     amount = serializers.IntegerField(read_only=True)
-
-    def get_id(self, obj):
-        return obj.ingredient.id
-
-    def get_name(self, obj):
-        return obj.ingredient.name
-
-    def get_measurement_unit(self, obj):
-        return obj.ingredient.measurement_unit
 
     class Meta:
         model = RecipeIngredient
@@ -50,11 +41,13 @@ class RecipeSerializer(serializers.ModelSerializer):
     ingredients = serializers.SerializerMethodField(
         method_name='get_ingredients'
     )
-    is_favorited = serializers.SerializerMethodField(
-        method_name='get_is_favorited'
+    is_favorited = serializers.BooleanField(
+        read_only=True,
+        default=False
     )
-    is_in_shopping_cart = serializers.SerializerMethodField(
-        method_name='get_is_in_shopping_cart'
+    is_in_shopping_cart = serializers.BooleanField(
+        read_only=True,
+        default=False
     )
 
     class Meta:
@@ -64,31 +57,9 @@ class RecipeSerializer(serializers.ModelSerializer):
                   'name', 'image', 'text', 'cooking_time',)
 
     def get_ingredients(self, obj):
-        list_ingredients = RecipeIngredient.objects.filter(recipe=obj)
-        serializers = RecipeIngredientsSerializer(
-            list_ingredients,
-            many=True,
-            read_only=True
-        )
-        return serializers.data
-
-    def get_is_favorited(self, obj):
-        request = self.context.get('request')
-        if request.user.is_anonymous:
-            return False
-        return Favorite.objects.filter(
-            recipe=obj,
-            user=request.user
-        ).exists()
-
-    def get_is_in_shopping_cart(self, obj):
-        request = self.context.get('request')
-        if request.user.is_anonymous:
-            return False
-        return ShoppingCart.objects.filter(
-            recipe=obj,
-            user=request.user
-        ).exists()
+        ingredients = RecipeIngredient.objects.filter(recipe=obj)
+        serializer = RecipeIngredientsSerializer(ingredients, many=True)
+        return serializer.data
 
 
 class MiniRecipeIngredientSerialiser(serializers.ModelSerializer):

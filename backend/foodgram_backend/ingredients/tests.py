@@ -12,7 +12,6 @@ User = get_user_model()
 
 class IngredientAPITestCase(TestCase):
     def setUp(self):
-        User = get_user_model()
         self.user_1 = User.objects.create_user(
             email="vpupkin@yandex.ru",
             username="vasya.pupkin",

@@ -41,13 +41,11 @@ class Recipe(models.Model):
     ingredients = models.ManyToManyField(
         Ingredient,
         verbose_name='Ингредиенты',
-        related_name='recipe_ingredient',
         through='RecipeIngredient'
     )
     tags = models.ManyToManyField(
         Tag,
         verbose_name='Тег',
-        related_name='recipe_tag',
         through='RecipeTags'
     )
     cooking_time = models.PositiveIntegerField(
@@ -67,6 +65,7 @@ class Recipe(models.Model):
         ]
         verbose_name_plural = 'Рецепты'
         verbose_name = 'Рецепт'
+        default_related_name = 'recipe_obj'
 
     def __str__(self):
         return self.name[:LENGTH_HEADER]
@@ -78,11 +77,13 @@ class RecipeIngredient(models.Model):
     """
     recipe = models.ForeignKey(
         Recipe,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        related_name='recipe_ingredient'
     )
     ingredient = models.ForeignKey(
         Ingredient,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        related_name='ingredient_recipe',
     )
     amount = models.PositiveSmallIntegerField(
         validators=[
@@ -119,6 +120,7 @@ class RecipeTags(models.Model):
     class Meta:
         verbose_name = 'Тег'
         verbose_name_plural = 'Тег'
+        default_related_name = 'recipe_tag'
 
     def __str__(self):
         return f"У рецепта '{self.recipe}' есть тег '{self.tag}'"
@@ -148,7 +150,6 @@ class Favorite(models.Model):
             models.UniqueConstraint(
                 fields=('recipe', 'user'),
                 name='unique_favorite',
-                violation_error_message='Такой рецепт уже есть в "Избранном".'
             ),
         )
 
@@ -182,8 +183,6 @@ class ShoppingCart(models.Model):
             models.UniqueConstraint(
                 fields=('recipe', 'user'),
                 name='shopping_recipe_user',
-                violation_error_message=(
-                    'Такой рецепт уже есть в "Списке покупок".')
             ),
         )
 

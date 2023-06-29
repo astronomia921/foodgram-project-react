@@ -56,7 +56,6 @@ class UserCreateAPITestCase(TestCase):
 
 class UserAPITestCase(TestCase):
     def setUp(self):
-        User = get_user_model()
         self.user_1 = User.objects.create_user(
             email="vpupkin@yandex.ru",
             username="vasya.pupkin",
@@ -159,7 +158,6 @@ class UserAPITestCase(TestCase):
 
 class FollowAPITestCase(TestCase):
     def setUp(self):
-        User = get_user_model()
         self.user_1 = User.objects.create_user(
             email="vpupkin@yandex.ru",
             username="vasya.pupkin",
@@ -236,7 +234,6 @@ class FollowAPITestCase(TestCase):
         response_1 = self.client.post(url, format="json")
         self.assertEqual(response_1.status_code, HTTPStatus.CREATED)
         user_data = response_1.json()
-        self.recipe_count_2 = Recipe.objects.filter(author=self.user_3).count()
         for key in user_data:
             self.assertEqual(response_1.json()[key], user_data[key])
 
