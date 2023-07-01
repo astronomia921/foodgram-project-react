@@ -5,7 +5,7 @@ from django.test import TestCase
 
 from rest_framework.test import APIClient
 
-from users.models import Follow
+from apps.users.models import Follow
 
 from apps.foodgram.models import (
     Favorite, Ingredient, Recipe, RecipeIngredient,

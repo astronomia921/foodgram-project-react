@@ -8,8 +8,7 @@ from rest_framework.test import APIClient
 from apps.foodgram.models import Recipe, RecipeIngredient
 from apps.ingredients.models import Ingredient
 from apps.tags.models import Tag
-
-from users.models import Follow
+from apps.users.models import Follow
 
 User = get_user_model()
 
