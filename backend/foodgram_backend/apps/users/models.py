@@ -2,9 +2,10 @@ from django.conf import settings
 from django.contrib.auth import models as auth_models
 from django.db import models
 
-from foodgram_backend.settings import MAX_LENGTH_EMAIL, MAX_LENGTH_USERNAME
-
 from .validators import validate_username
+
+MAX_LENGTH_EMAIL = 254
+MAX_LENGTH_USERNAME = 150
 
 
 class User(auth_models.AbstractUser):

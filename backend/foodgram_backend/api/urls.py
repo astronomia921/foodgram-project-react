@@ -2,11 +2,10 @@ from django.urls import include, path
 
 from rest_framework.routers import DefaultRouter
 
-from users.views import AccountViewSet
-
 from .foodgram_views import RecipeViewSet
 from .ingredients_views import IngredientViewSet
 from .tags_views import TagViewSet
+from .users_views import AccountViewSet
 
 app_name = 'api'
 

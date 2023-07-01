@@ -12,7 +12,7 @@ from rest_framework.response import Response
 
 from weasyprint import HTML
 
-from users.serializers import RecipeMinifiedSerializer
+from .users_serializers import RecipeMinifiedSerializer
 
 from .filters import RecipeFilter
 from .foodgram_serializers import (CreateUpdateDeleteRecipeSerializer,

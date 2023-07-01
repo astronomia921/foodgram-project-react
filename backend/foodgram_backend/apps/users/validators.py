@@ -1,7 +1,9 @@
+import re
+
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
-from foodgram_backend.settings import REGEX_USER
+REGEX_USER = re.compile(r'^[\w.@+-]+\Z')
 
 
 def validate_username(value):

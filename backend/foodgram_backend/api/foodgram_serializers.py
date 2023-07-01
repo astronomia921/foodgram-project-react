@@ -7,8 +7,8 @@ from rest_framework import serializers
 from apps.foodgram.models import Recipe, RecipeIngredient
 from apps.ingredients.models import Ingredient
 from apps.tags.models import Tag
-from users.serializers import CustomUserSerializer
 
+from .users_serializers import CustomUserSerializer
 from .tags_serializers import TagSerializer
 
 

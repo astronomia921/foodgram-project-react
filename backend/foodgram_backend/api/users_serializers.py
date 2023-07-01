@@ -9,8 +9,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
 from apps.foodgram.models import Recipe
-
-from users.models import Follow
+from apps.users.models import Follow
 
 User = get_user_model()
 

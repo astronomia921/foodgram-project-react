@@ -11,8 +11,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from api.pagination import MyPagination
-from users.models import Follow
-from .serializers import FollowSerializer
+from apps.users.models import Follow
+
+from .users_serializers import FollowSerializer
 
 User = get_user_model()
 
