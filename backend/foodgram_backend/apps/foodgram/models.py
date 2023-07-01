@@ -4,8 +4,8 @@ from django.db import models
 
 from foodgram_backend.settings import LENGTH_HEADER, MAX_LENGTH_NAME
 
-from ingredients.models import Ingredient
-from tags.models import Tag
+from apps.ingredients.models import Ingredient
+from apps.tags.models import Tag
 
 
 class Recipe(models.Model):

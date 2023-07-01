@@ -5,11 +5,11 @@ from django.test import TestCase
 
 from rest_framework.test import APIClient
 
-from foodgram.models import Recipe, RecipeIngredient
-from ingredients.models import Ingredient
-from tags.models import Tag
+from apps.foodgram.models import Recipe, RecipeIngredient
+from apps.ingredients.models import Ingredient
+from apps.tags.models import Tag
 
-from .models import Follow
+from users.models import Follow
 
 User = get_user_model()
 

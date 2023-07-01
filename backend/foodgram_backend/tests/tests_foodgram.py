@@ -7,8 +7,9 @@ from rest_framework.test import APIClient
 
 from users.models import Follow
 
-from .models import (Favorite, Ingredient, Recipe, RecipeIngredient,
-                     ShoppingCart, Tag)
+from apps.foodgram.models import (
+    Favorite, Ingredient, Recipe, RecipeIngredient,
+    ShoppingCart, Tag)
 
 User = get_user_model()
 

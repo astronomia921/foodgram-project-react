@@ -1,8 +1,9 @@
+# pylint: disable=E1101
 import django_filters as filters
 
-from tags.models import Tag
-
-from .models import Recipe
+from apps.foodgram.models import Recipe
+from apps.ingredients.models import Ingredient
+from apps.tags.models import Tag
 
 
 class RecipeFilter(filters.FilterSet):
@@ -43,3 +44,11 @@ class RecipeFilter(filters.FilterSet):
             return queryset.filter(shopping_cart__user=self.request.user)
         else:
             return queryset.exclude(shopping_cart__user=self.request.user)
+
+
+class IngredientFilter(filters.FilterSet):
+    name = filters.CharFilter(lookup_expr='startswith')
+
+    class Meta:
+        model = Ingredient
+        fields = ('name',)

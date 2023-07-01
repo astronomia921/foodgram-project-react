@@ -1,14 +1,16 @@
+# pylint: disable=E1101
 import re
 
 from django.contrib.auth import get_user_model
-from djoser.serializers import UserCreateSerializer, UserSerializer
+from djoser.serializers import (
+    UserCreateSerializer as UserCreate, UserSerializer)
 
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
-from foodgram.models import Recipe
+from apps.foodgram.models import Recipe
 
-from .models import Follow
+from users.models import Follow
 
 User = get_user_model()
 
@@ -62,7 +64,7 @@ class CustomUserSerializer(UserSerializer):
         return None
 
 
-class UserCreateSerializer(UserCreateSerializer):
+class UserCreateSerializer(UserCreate):
     email = serializers.EmailField(
         validators=[
             UniqueValidator(
@@ -80,7 +82,7 @@ class UserCreateSerializer(UserCreateSerializer):
         ]
     )
 
-    class Meta(UserCreateSerializer.Meta):
+    class Meta(UserCreate.Meta):
         model = User
         fields = ("id", "email",
                   "username", "first_name",

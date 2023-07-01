@@ -24,10 +24,12 @@ INSTALLED_APPS = [
     'djoser',
     "debug_toolbar",
 
-    'ingredients.apps.IngredientsConfig',
+    'api.apps.ApiConfig',
     'users.apps.UsersConfig',
-    'tags.apps.TagsConfig',
-    'foodgram.apps.FoodgramConfig',
+
+    'apps.ingredients.apps.IngredientsConfig',
+    'apps.tags.apps.TagsConfig',
+    'apps.foodgram.apps.FoodgramConfig',
 ]
 
 MIDDLEWARE = [

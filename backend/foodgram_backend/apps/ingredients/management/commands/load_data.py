@@ -2,7 +2,7 @@ import json
 
 from django.core.management.base import BaseCommand
 
-from ingredients.models import Ingredient
+from apps.ingredients.models import Ingredient
 
 from foodgram_backend.settings import FILE_PATH
 

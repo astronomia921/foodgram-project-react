@@ -1,15 +1,15 @@
+# pylint: disable=E1101
+
 from django.shortcuts import get_object_or_404
-
 from drf_extra_fields.fields import Base64ImageField
-
 from rest_framework import serializers
 
-from ingredients.models import Ingredient
-from tags.models import Tag
-from tags.serializers import TagSerializer
+from apps.foodgram.models import Recipe, RecipeIngredient
+from apps.ingredients.models import Ingredient
+from apps.tags.models import Tag
 from users.serializers import CustomUserSerializer
 
-from .models import Recipe, RecipeIngredient, Favorite, ShoppingCart as Cart
+from .tags_serializers import TagSerializer
 
 
 class RecipeIngredientsSerializer(serializers.ModelSerializer):
