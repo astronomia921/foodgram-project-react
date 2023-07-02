@@ -158,10 +158,10 @@ DJOSER = {
     'ACTIVATION_URL': 'activate/{uid}/{token}',
     'PASSWORD_RESET_CONFIRM_URL': 'users/set_password/{uid}/{token}',
     'SERIALIZERS': {
-        'user_create': 'api.users_serializers.UserCreateSerializer',
-        'user': 'api.users_serializers.CustomUserSerializer',
+        'user_create': 'api.api_users.users_serializers.UserCreateSerializer',
+        'user': 'api.api_users.users_serializers.CustomUserSerializer',
         'user_delete': 'djoser.serializers.UserDeleteSerializer',
-        'current_user': 'api.users_serializers.CustomUserSerializer',
+        'current_user': 'api.api_users.users_serializers.CustomUserSerializer',
         'set_password': 'djoser.serializers.SetPasswordSerializer',
         'set_password_retype': (
             'djoser.serializers.SetPasswordRetypeSerializer'),

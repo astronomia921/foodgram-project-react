@@ -12,13 +12,13 @@ from rest_framework.response import Response
 
 from weasyprint import HTML
 
-from .users_serializers import RecipeMinifiedSerializer
+from api.api_users.users_serializers import RecipeMinifiedSerializer
 
-from .filters import RecipeFilter
-from .foodgram_serializers import (CreateUpdateDeleteRecipeSerializer,
-                                   RecipeSerializer)
-from .pagination import MyPagination
-from .permissions import IsAuthorOrAdmin
+from api.filters import RecipeFilter
+from api.api_foodgram.foodgram_serializers import (
+    CreateUpdateDeleteRecipeSerializer, RecipeSerializer)
+from api.pagination import MyPagination
+from api.permissions import IsAuthorOrAdmin
 
 
 class RecipeViewSet(viewsets.ModelViewSet):

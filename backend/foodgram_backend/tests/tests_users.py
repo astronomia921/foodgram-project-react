@@ -186,6 +186,10 @@ class FollowAPITestCase(TestCase):
             name="Капуста",
             measurement_unit="кг",
         )
+        self.ingredient2 = Ingredient.objects.create(
+            name="Картошка",
+            measurement_unit="кг",
+        )
         self.tag = Tag.objects.create(
             name='Завтрак',
             color='#E26C2D',
@@ -218,7 +222,7 @@ class FollowAPITestCase(TestCase):
         self.recipe_2.tags.add(self.tag)
         self.recipe_ingredient = RecipeIngredient.objects.get_or_create(
             recipe=self.recipe_1,
-            ingredient=self.ingredient,
+            ingredient=self.ingredient2,
             amount=2,
         )
         self.recipe_count = Recipe.objects.filter(author=self.user_2).count()

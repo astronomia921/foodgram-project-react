@@ -6,9 +6,9 @@ from rest_framework.permissions import AllowAny
 
 from apps.ingredients.models import Ingredient
 
-from .pagination import MyPagination
-from .filters import IngredientFilter
-from .ingredients_serializers import IngredientSerializer
+from api.pagination import MyPagination
+from api.filters import IngredientFilter
+from api.api_ingredients.ingredients_serializers import IngredientSerializer
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):

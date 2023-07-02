@@ -97,9 +97,15 @@ class RecipeIngredient(models.Model):
     class Meta:
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Ингредиенты'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['recipe', 'ingredient'],
+                name='unique_ingredient'
+            )
+        ]
 
     def __str__(self):
-        return f"В рецепте '{self.recipe}' есть ингредиент '{self.ingredient}'"
+        return f'{self.recipe.name}: {self.ingredient.name} {self.amount}'
 
 
 class RecipeTags(models.Model):
@@ -121,9 +127,15 @@ class RecipeTags(models.Model):
         verbose_name = 'Тег'
         verbose_name_plural = 'Тег'
         default_related_name = 'recipe_tag'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['recipe', 'tag'],
+                name='unique_tag'
+            )
+        ]
 
     def __str__(self):
-        return f"У рецепта '{self.recipe}' есть тег '{self.tag}'"
+        return f"У рецепта {self.recipe} есть тег {self.tag}"
 
 
 class Favorite(models.Model):

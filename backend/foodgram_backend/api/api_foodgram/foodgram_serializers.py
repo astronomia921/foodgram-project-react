@@ -8,8 +8,8 @@ from apps.foodgram.models import Recipe, RecipeIngredient
 from apps.ingredients.models import Ingredient
 from apps.tags.models import Tag
 
-from .users_serializers import CustomUserSerializer
-from .tags_serializers import TagSerializer
+from api.api_users.users_serializers import CustomUserSerializer
+from api.api_tags.tags_serializers import TagSerializer
 
 
 class RecipeIngredientsSerializer(serializers.ModelSerializer):
