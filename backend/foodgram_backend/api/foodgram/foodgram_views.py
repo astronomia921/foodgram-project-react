@@ -1,5 +1,4 @@
 # pylint: disable=E1101
-from apps.foodgram.models import Favorite, Recipe, ShoppingCart
 from django.db.models import Exists, OuterRef
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -12,17 +11,19 @@ from rest_framework.response import Response
 
 from weasyprint import HTML
 
-from api.api_users.users_serializers import RecipeMinifiedSerializer
+from api.users.users_serializers import RecipeMinifiedSerializer
 
 from api.filters import RecipeFilter
-from api.api_foodgram.foodgram_serializers import (
+from api.foodgram.foodgram_serializers import (
     CreateUpdateDeleteRecipeSerializer, RecipeSerializer)
 from api.pagination import MyPagination
-from api.permissions import IsAuthorOrAdmin
+from api.permissions import AuthorOrReadOnly
+
+from apps.foodgram.models import Favorite, Recipe, ShoppingCart
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
-    permission_classes = (IsAuthorOrAdmin, )
+    permission_classes = (AuthorOrReadOnly, )
     filter_backends = (DjangoFilterBackend,
                        filters.SearchFilter,)
     pagination_class = MyPagination
@@ -34,18 +35,23 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return CreateUpdateDeleteRecipeSerializer
 
     def get_queryset(self):
-        favorite = Favorite.objects.filter(
-            user=self.request.user,
-            recipe=OuterRef('pk')
-        )
-        shopping_cart = ShoppingCart.objects.filter(
-            user=self.request.user,
-            recipe=OuterRef('pk')
-        )
-        return Recipe.objects.annotate(
-            is_favorited=Exists(favorite),
-            is_in_shopping_cart=Exists(shopping_cart)
-        )
+        queryset = Recipe.objects.all()
+
+        if self.request.user.is_authenticated:
+            favorite = Favorite.objects.filter(
+                user=self.request.user,
+                recipe=OuterRef('pk')
+            )
+            shopping_cart = ShoppingCart.objects.filter(
+                user=self.request.user,
+                recipe=OuterRef('pk')
+            )
+            queryset = queryset.annotate(
+                is_favorited=Exists(favorite),
+                is_in_shopping_cart=Exists(shopping_cart)
+            )
+
+        return queryset
 
     @action(
         methods=['get'],

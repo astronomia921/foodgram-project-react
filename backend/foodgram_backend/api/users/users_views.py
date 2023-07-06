@@ -13,7 +13,7 @@ from rest_framework.response import Response
 from api.pagination import MyPagination
 from apps.users.models import Follow
 
-from api.api_users.users_serializers import FollowSerializer
+from api.users.users_serializers import FollowSerializer
 
 User = get_user_model()
 

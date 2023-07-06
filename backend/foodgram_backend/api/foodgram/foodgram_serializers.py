@@ -8,8 +8,8 @@ from apps.foodgram.models import Recipe, RecipeIngredient
 from apps.ingredients.models import Ingredient
 from apps.tags.models import Tag
 
-from api.api_users.users_serializers import CustomUserSerializer
-from api.api_tags.tags_serializers import TagSerializer
+from api.users.users_serializers import CustomUserSerializer
+from api.tags.tags_serializers import TagSerializer
 
 
 class RecipeIngredientsSerializer(serializers.ModelSerializer):
@@ -98,7 +98,6 @@ class CreateUpdateDeleteRecipeSerializer(serializers.ModelSerializer):
         help_text='Добавьте тег (больше 1)'
     )
     ingredients = MiniRecipeIngredientSerialiser(
-        style={'base_template': 'input.html'},
         many=True,
         label='Ингредиент',
         help_text=(

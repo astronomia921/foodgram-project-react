@@ -1,4 +1,5 @@
 import re
+import os
 
 from pathlib import Path
 
@@ -66,8 +67,12 @@ WSGI_APPLICATION = 'foodgram_backend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('POSTGRES_DB', 'django'),
+        'USER': os.getenv('POSTGRES_USER', 'django_user'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', ''),
+        'HOST': os.getenv('DB_HOST', ''),
+        'PORT': os.getenv('DB_PORT', '5432')
     }
 }
 
@@ -94,8 +99,8 @@ USE_I18N = True
 
 USE_TZ = True
 
-STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / 'collected_static'
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'backend_static'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / "media"
@@ -128,7 +133,9 @@ REGEX_USER = re.compile(r'^[\w.@+-]+\Z')
 
 REGEX_VALIDATORS = '^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$'
 
-FILE_PATH = 'C:/VScode.Git/Dev/final_project/foodgram-project-react/data/ingredients.json'
+FILE_PATH = 'foodgram-project-react/backend/foodgram_backend/data/ingredients.json'
+
+#  'foodgram-project-react/data/ingredients.json'
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
@@ -158,10 +165,10 @@ DJOSER = {
     'ACTIVATION_URL': 'activate/{uid}/{token}',
     'PASSWORD_RESET_CONFIRM_URL': 'users/set_password/{uid}/{token}',
     'SERIALIZERS': {
-        'user_create': 'api.api_users.users_serializers.UserCreateSerializer',
-        'user': 'api.api_users.users_serializers.CustomUserSerializer',
+        'user_create': 'api.users.users_serializers.UserCreateSerializer',
+        'user': 'api.users.users_serializers.CustomUserSerializer',
         'user_delete': 'djoser.serializers.UserDeleteSerializer',
-        'current_user': 'api.api_users.users_serializers.CustomUserSerializer',
+        'current_user': 'api.users.users_serializers.CustomUserSerializer',
         'set_password': 'djoser.serializers.SetPasswordSerializer',
         'set_password_retype': (
             'djoser.serializers.SetPasswordRetypeSerializer'),
