@@ -11,10 +11,10 @@ class Command(BaseCommand):
     help = 'Загрузка данных из JSON файла в таблицу Ingredients'
 
     def add_arguments(self, parser):
-        parser.add_argument(FILE_PATH, type=str, help='Путь до JSON файла')
+        parser.add_argument('--path', type=str, help='Путь до JSON файла')
 
     def handle(self, *args, **options):
-        file_path = options[FILE_PATH]
+        file_path = options['path'] + 'ingredients.json'
         with open(file_path, encoding="utf8") as f:
             data = json.load(f)
             for item in data:
