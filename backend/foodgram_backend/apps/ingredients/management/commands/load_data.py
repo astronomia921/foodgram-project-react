@@ -4,8 +4,6 @@ from django.core.management.base import BaseCommand
 
 from apps.ingredients.models import Ingredient
 
-from foodgram_backend.settings import FILE_PATH
-
 
 class Command(BaseCommand):
     help = 'Загрузка данных из JSON файла в таблицу Ingredients'
