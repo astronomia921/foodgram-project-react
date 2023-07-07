@@ -5,11 +5,16 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-k)ky0pgz7wxm!x^wroa&-@8=&w-n5-=^_l**94*sp4i8@0lx__'
+SECRET_KEY = os.getenv('secret_key', default='123dvvdsvnsidj21')
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    'localhost',
+    os.getenv('web_url'),
+    os.getenv('web_name')
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
