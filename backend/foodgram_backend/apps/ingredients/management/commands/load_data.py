@@ -1,4 +1,5 @@
 import csv
+import os
 
 from django.core.management.base import BaseCommand
 
@@ -13,7 +14,14 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         print('Заполнение модели Ingredient из csv запущено.')
-        file_path = options['path'] + 'ingredients.csv'
+        file_path = options['path']
+        if not file_path:
+            self.stdout.write(
+                self.style.ERROR('Не указан путь к файлу.')
+            )
+            return
+
+        file_path = os.path.join(file_path, 'ingredients.csv')
         with open(file_path, 'r') as csv_file:
             reader = csv.reader(csv_file)
 
