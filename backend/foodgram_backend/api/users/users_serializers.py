@@ -2,8 +2,8 @@
 import re
 
 from django.contrib.auth import get_user_model
-from djoser.serializers import (
-    UserCreateSerializer as UserCreate, UserSerializer)
+from djoser.serializers import UserCreateSerializer as UserCreate
+from djoser.serializers import UserSerializer
 
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
