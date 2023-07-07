@@ -126,6 +126,7 @@ jobs:
             sudo journalctl --vacuum-size=100M
             sudo journalctl --vacuum-time=1d
             sudo journalctl --vacuum-files=10
+            sudo docker images --filter "dangling=true" -q | xargs docker rmi
 
             # Выполняет pull образов с DockerHub
             sudo docker compose -f docker-compose.production.yml pull
