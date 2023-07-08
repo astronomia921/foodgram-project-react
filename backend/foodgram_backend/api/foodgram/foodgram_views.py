@@ -63,7 +63,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def download_shopping_cart(self, request):
         if request.user.is_anonymous:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
-        shopping_cart_items = request.user.shopping_cart.all()
+        shopping_cart_items = ShoppingCart.objects.filter(user=request.user)
         recipe_instances = [item.recipe for item in shopping_cart_items]
         serializer = RecipeSerializer(
             recipe_instances, many=True, context={'request': request})
