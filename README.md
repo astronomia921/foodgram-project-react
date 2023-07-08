@@ -9,3 +9,4 @@ docker run --env-file .env --net django-network-3 --name foodgram_backend_contai
 
 cp -r /app/backend_static/. /backend_static/static/
 cp -r /app/result_build/. /static/
+/foodgram_backend/apps/data/ingredients.json

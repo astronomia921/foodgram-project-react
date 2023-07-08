@@ -8,15 +8,12 @@ from apps.ingredients.models import Ingredient
 class Command(BaseCommand):
     help = 'Загрузка данных из JSON файла в таблицу Ingredients'
 
-    def add_arguments(self, parser):
-        parser.add_argument('--path', type=str, help='Путь до JSON файла')
-
     def handle(self, *args, **options):
-        file_path = options['path'] + 'ingredients.json'
+        file_path = '/app/data/ingredients.json'
         with open(file_path, encoding="utf8") as f:
             data = json.load(f)
             for item in data:
-                Ingredient.objects.create(
+                Ingredient.objects.get_or_create(
                     name=item['name'],
                     measurement_unit=item['measurement_unit']
                 )
