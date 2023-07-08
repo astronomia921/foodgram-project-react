@@ -16,6 +16,8 @@ ALLOWED_HOSTS = [
     os.getenv('web_name')
 ]
 
+CSRF_TRUSTED_ORIGINS = [os.getenv('web_url'), os.getenv('web_name')]
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -148,8 +150,8 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
+        # 'rest_framework.authentication.BasicAuthentication',
     ),
     'DEFAULT_PAGINATION_CLASS': (
         'rest_framework.pagination.PageNumberPagination'),
